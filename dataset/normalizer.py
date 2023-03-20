@@ -3,6 +3,7 @@ This script creates a single dataset from two different ones, and exports it in 
 """
 import csv
 import json
+import datetime
 
 """
 url: url in bio
@@ -53,18 +54,16 @@ def compute_ahc(ht_numbers, media_count) -> float:
     return result
 
 
-def convert_hours(secs) -> int:
-    return secs/3600
-
-
 def compute_avg_time(times) -> float:
     length = len(times)
     if not length:
         return 0
     acc = 0
     for i in range(len(times) - 1):
-        acc += convert_hours(times[i]) - convert_hours(times[i + 1])
-    return acc / length
+        time1 = datetime.datetime.fromtimestamp(times[i])
+        time2 = datetime.datetime.fromtimestamp(times[i+1])
+        acc += (time1-time2).total_seconds()
+    return (acc/3600) / length
 
 
 def json_importer(filename: str, fake=False) -> list:
