@@ -53,13 +53,17 @@ def compute_ahc(ht_numbers, media_count) -> float:
     return result
 
 
+def convert_hours(secs) -> int:
+    return secs/3600
+
+
 def compute_avg_time(times) -> float:
     length = len(times)
     if not length:
         return 0
     acc = 0
     for i in range(len(times) - 1):
-        acc += times[i] - times[i + 1]
+        acc += convert_hours(times[i]) - convert_hours(times[i + 1])
     return acc / length
 
 
