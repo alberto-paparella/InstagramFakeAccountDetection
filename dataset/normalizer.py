@@ -4,6 +4,7 @@ This script creates a single dataset from two different ones, and exports it in 
 import csv
 import json
 import datetime
+import random
 
 """
 url: url in bio
@@ -90,7 +91,18 @@ result = csv_importer("./sources/user_fake_authentic_2class.csv")
 result += json_importer("./sources/automatedAccountData.json", True)
 result += json_importer("./sources/nonautomatedAccountData.json", False)
 print(f"Done loading. {len(result)} entries have been loaded up.")
+print("Now shuffling...")
+random.shuffle(result)
+train_ratio = 70
+print(f"Now splitting dataset into train and validation with ratio {train_ratio}:{100-train_ratio}")
+train_dataset = result[:int(len(result)*(train_ratio/100))]
+validation_dataset = result[int(len(result)*(train_ratio/100)):]
+
 print("Now saving to output file...")
-with open("output.json", "w") as output_file:
-    json.dump(result, output_file)
+with open("train.json", "w") as output_file:
+    json.dump(train_dataset, output_file)
+
+with open("validation.json", "w") as output_file:
+    json.dump(validation_dataset, output_file)
+
 print("Done.")
