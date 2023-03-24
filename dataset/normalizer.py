@@ -32,7 +32,28 @@ def csv_importer(filename: str) -> list:
             counter += 1
             result.append(
                 {"nmedia": row[0], "biol": row[3], "url": row[5], "erc": row[10], "ahc": row[12], "avgtime": row[16],
-                 "nfollowing": row[2], "fake": (True if row[17] == "f" else False)})
+                 "nfollowing": row[2], "fake": (1 if row[17] == "f" else 0)})
+    print(f"Loaded {counter} entries from source {filename}")
+    return result
+
+
+def csv_importer_full(filename):
+    result = []
+    print(f"Now loading from file {filename}...")
+    with open(filename, 'r') as csv_source:
+        reader = csv.reader(csv_source)
+        counter = 0
+        for row in reader:
+            print(f"{counter}        ", end="\r")
+            if counter == 0:
+                counter += 1
+                continue
+            counter += 1
+            result.append(
+                {"nmedia": float(row[0]), "flw": float(row[1]), "flg": float(row[2]), "biol": float(row[3]), "pic": float(row[4]),
+                 "url": float(row[5]), "cl": float(row[6]), "cz": float(row[7]), "ni": float(row[8]), "erl": float(row[9]), "erc": float(row[10]),
+                 "lt": float(row[11]), "ahc": float(row[12]), "pr": float(row[13]), "fo": float(row[14]), "cs": float(row[15]), "avgtime": float(row[16]),
+                 "fake": (1 if row[17] == "f" else 0)})
     print(f"Loaded {counter} entries from source {filename}")
     return result
 
@@ -62,9 +83,9 @@ def compute_avg_time(times) -> float:
     acc = 0
     for i in range(len(times) - 1):
         time1 = datetime.datetime.fromtimestamp(times[i])
-        time2 = datetime.datetime.fromtimestamp(times[i+1])
-        acc += (time1-time2).total_seconds()
-    return (acc/3600) / length
+        time2 = datetime.datetime.fromtimestamp(times[i + 1])
+        acc += (time1 - time2).total_seconds()
+    return (acc / 3600) / length
 
 
 def json_importer(filename: str, fake=False) -> list:
@@ -76,33 +97,33 @@ def json_importer(filename: str, fake=False) -> list:
         counter = 0
         for row in data:
             print(f"{counter}/{size}       ", end="\r")
-            counter+=1
+            counter += 1
             result.append(
                 {"nmedia": row["userMediaCount"], "biol": row["userBiographyLength"], "url": row["userHasExternalUrl"],
                  "erc": compute_erc(sum(row["mediaCommentNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
                  "ahc": compute_ahc(row["mediaHashtagNumbers"], row["userMediaCount"]),
                  "avgtime": compute_avg_time(row["mediaUploadTimes"]), "nfollowing": row["userFollowingCount"],
-                 "fake": fake})
+                 "fake": (1 if fake else 0)})
         print(f"Loaded {counter} entries from source {filename}")
     return result
 
+if __name__ == "__main__":
+    result = csv_importer("./sources/user_fake_authentic_2class.csv")
+    result += json_importer("./sources/automatedAccountData.json", True)
+    result += json_importer("./sources/nonautomatedAccountData.json", False)
+    print(f"Done loading. {len(result)} entries have been loaded up.")
+    print("Now shuffling...")
+    random.shuffle(result)
+    train_ratio = 70
+    print(f"Now splitting dataset into train and validation with ratio {train_ratio}:{100 - train_ratio}")
+    train_dataset = result[:int(len(result) * (train_ratio / 100))]
+    validation_dataset = result[int(len(result) * (train_ratio / 100)):]
 
-result = csv_importer("./sources/user_fake_authentic_2class.csv")
-result += json_importer("./sources/automatedAccountData.json", True)
-result += json_importer("./sources/nonautomatedAccountData.json", False)
-print(f"Done loading. {len(result)} entries have been loaded up.")
-print("Now shuffling...")
-random.shuffle(result)
-train_ratio = 70
-print(f"Now splitting dataset into train and validation with ratio {train_ratio}:{100-train_ratio}")
-train_dataset = result[:int(len(result)*(train_ratio/100))]
-validation_dataset = result[int(len(result)*(train_ratio/100)):]
+    print("Now saving to output file...")
+    with open("train.json", "w") as output_file:
+        json.dump(train_dataset, output_file)
 
-print("Now saving to output file...")
-with open("train.json", "w") as output_file:
-    json.dump(train_dataset, output_file)
+    with open("validation.json", "w") as output_file:
+        json.dump(validation_dataset, output_file)
 
-with open("validation.json", "w") as output_file:
-    json.dump(validation_dataset, output_file)
-
-print("Done.")
+    print("Done.")
