@@ -5,7 +5,7 @@ import csv
 import random
 import pandas as pd
 
-from sklearn import tree
+from sklearn import tree, metrics
 
 
 def find_demarcator(dataset):
@@ -78,8 +78,9 @@ print("Fitting complete.")
 X_val, y_val = validation_df.iloc[:, :-2], validation_df.iloc[:, -1]
 y_pred = clf.predict(X_val)
 
-y_compare = y_pred - y_val
-print('accuracy =', 100 - (sum(abs(y_compare)) / len(validation_df.index)) * 100)
+#y_compare = y_pred - y_val
+#print('accuracy =', 100 - (sum(abs(y_compare)) / len(validation_df.index)) * 100)
+print(metrics.classification_report(y_val,y_pred))
 
 # Custom tree
 cX, cy = custom_train_df.iloc[:,:-2], custom_train_df.iloc[:,-1]
@@ -90,5 +91,6 @@ print("Fitting complete.")
 cX_val, cy_val = custom_validation_df.iloc[:,:-2], validation_df.iloc[:, -1]
 cy_pred = cclf.predict(cX_val)
 
-cy_compare = cy_pred - cy_val
-print('accuracy =', 100 - (sum(abs(cy_compare)) / len(custom_validation_df.index)) * 100)
+#cy_compare = cy_pred - cy_val
+#print('accuracy =', 100 - (sum(abs(cy_compare)) / len(custom_validation_df.index)) * 100)
+print(metrics.classification_report(cy_val,cy_pred))
