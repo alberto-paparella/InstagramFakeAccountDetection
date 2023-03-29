@@ -57,7 +57,8 @@ custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo
 custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
 print(custom_train_df)
 print(custom_validation_df)
-
+print(id(custom_train_df))
+print(id(train_df))
 # Default tree
 X, y = train_df.iloc[:, :-2], train_df.iloc[:, -1]
 clf = tree.DecisionTreeClassifier()
@@ -74,6 +75,7 @@ print(metrics.classification_report(y_val,y_pred))
 # Custom tree
 cX, cy = custom_train_df.iloc[:,:-2], custom_train_df.iloc[:,-1]
 cclf = tree.DecisionTreeClassifier()
+
 cclf = cclf.fit(cX, cy)
 print("Fitting complete.")
 
