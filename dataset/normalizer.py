@@ -10,10 +10,10 @@ import random
 url: url in bio
 biol: lunghezza bio
 erc : numero commenti / numero media / numero follower
-ahc: numero di hashtag medi
 nmedia: numero media
 avgtime: intervallo medio tra un post e un altro (in ore)
 nfollowing: numero di persone seguite
+nfollower: numero di follower - da mettere!
 fake: se l'utente è fake o meno
 """
 
@@ -31,8 +31,9 @@ def csv_importer(filename: str) -> list:
                 continue
             counter += 1
             result.append(
-                {"nmedia": row[0], "biol": row[3], "url": row[5], "erc": row[10], "ahc": row[12], "avgtime": row[16],
-                 "nfollowing": row[2], "fake": (1 if row[17] == "f" else 0)})
+                {"nmedia": float(row[0]), "biol": float(row[3]), "url": float(row[5]), "erl": float(row[10]),
+                 "erc": float(row[10]), "avgtime": float(row[16]), "nfollowing": float(row[2]),
+                 "nfollower": float(row[1]), "fake": (1 if row[17] == "f" else 0)})
     print(f"Loaded {counter} entries from source {filename}")
     return result
 
@@ -50,9 +51,12 @@ def csv_importer_full(filename):
                 continue
             counter += 1
             result.append(
-                {"nmedia": float(row[0]), "flw": float(row[1]), "flg": float(row[2]), "biol": float(row[3]), "pic": float(row[4]),
-                 "url": float(row[5]), "cl": float(row[6]), "cz": float(row[7]), "ni": float(row[8]), "erl": float(row[9]), "erc": float(row[10]),
-                 "lt": float(row[11]), "ahc": float(row[12]), "pr": float(row[13]), "fo": float(row[14]), "cs": float(row[15]), "avgtime": float(row[16]),
+                {"nmedia": float(row[0]), "flw": float(row[1]), "flg": float(row[2]), "biol": float(row[3]),
+                 "pic": float(row[4]),
+                 "url": float(row[5]), "cl": float(row[6]), "cz": float(row[7]), "ni": float(row[8]),
+                 "erl": float(row[9]), "erc": float(row[10]),
+                 "lt": float(row[11]), "ahc": float(row[12]), "pr": float(row[13]), "fo": float(row[14]),
+                 "cs": float(row[15]), "avgtime": float(row[16]),
                  "fake": (1 if row[17] == "f" else 0)})
     print(f"Loaded {counter} entries from source {filename}")
     return result
@@ -62,6 +66,15 @@ def compute_erc(num_comments, num_media, num_followers) -> float:
     result = 0
     try:
         result = num_comments / num_media / num_followers
+    except ZeroDivisionError:
+        return 0
+    return result
+
+
+def compute_erl(num_likes, num_media, num_followers) -> float:
+    result = 0
+    try:
+        result = num_likes / num_media / num_followers
     except ZeroDivisionError:
         return 0
     return result
@@ -100,12 +113,13 @@ def json_importer(filename: str, fake=False) -> list:
             counter += 1
             result.append(
                 {"nmedia": row["userMediaCount"], "biol": row["userBiographyLength"], "url": row["userHasExternalUrl"],
+                 "erl": compute_erl(sum(row["mediaLikeNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
                  "erc": compute_erc(sum(row["mediaCommentNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
-                 "ahc": compute_ahc(row["mediaHashtagNumbers"], row["userMediaCount"]),
                  "avgtime": compute_avg_time(row["mediaUploadTimes"]), "nfollowing": row["userFollowingCount"],
-                 "fake": (1 if fake else 0)})
+                 "nfollower": row["userFollowerCount"], "fake": (1 if fake else 0)})
         print(f"Loaded {counter} entries from source {filename}")
     return result
+
 
 if __name__ == "__main__":
     result = csv_importer("./sources/user_fake_authentic_2class.csv")
