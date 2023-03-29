@@ -10,6 +10,7 @@ import random
 url: url in bio
 biol: lunghezza bio
 erc : numero commenti / numero media / numero follower
+erl : numero like / numero media / numero follower
 nmedia: numero media
 avgtime: intervallo medio tra un post e un altro (in ore)
 nfollowing: numero di persone seguite
@@ -117,6 +118,39 @@ def json_importer(filename: str, fake=False) -> list:
                  "erc": compute_erc(sum(row["mediaCommentNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
                  "avgtime": compute_avg_time(row["mediaUploadTimes"]), "nfollowing": row["userFollowingCount"],
                  "nfollower": row["userFollowerCount"], "fake": (1 if fake else 0)})
+        print(f"Loaded {counter} entries from source {filename}")
+    return result
+
+
+def json_importer_full(filename: str, fake=False) -> list:
+    result = []
+    print(f"Now loading from file {filename}...")
+    with open(filename, "r") as json_source:
+        data = json.load(json_source)
+        size = len(data)
+        counter = 0
+        for row in data:
+            print(f"{counter}/{size}       ", end="\r")
+            counter += 1
+            result.append(
+                {"nmedia": row["userMediaCount"], "biol": row["userBiographyLength"], "url": row["userHasExternalUrl"],
+                 "erl": compute_erl(sum(row["mediaLikeNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
+                 "erc": compute_erc(sum(row["mediaCommentNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
+                 "avgtime": compute_avg_time(row["mediaUploadTimes"]), "nfollowing": row["userFollowingCount"],
+                 "nfollower": row["userFollowerCount"],
+                 "mediaLikeNumbers": (
+                     sum(row["mediaLikeNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
+                 "mediaCommentNumbers": (
+                     sum(row["mediaCommentNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
+                 "mediaCommentsAreDisabled": (
+                     sum(row["mediaCommentsAreDisabled"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
+                 "mediaHashtagNumbers": (
+                     sum(row["mediaHashtagNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
+                 "mediaHasLocationInfo": (
+                     sum(row["mediaHasLocationInfo"]) / row["userMediaCount"] if row["userMediaCount"] != 0 else 0),
+                 "userHasHighlighReels": row["userHasHighlighReels"], "usernameLength": row["usernameLength"],
+                 "usernameDigitCount": row["usernameDigitCount"],
+                 "fake": (1 if fake else 0)})
         print(f"Loaded {counter} entries from source {filename}")
     return result
 
