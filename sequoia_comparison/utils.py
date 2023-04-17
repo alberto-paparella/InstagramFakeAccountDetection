@@ -3,8 +3,6 @@ import pandas as pd
 from sklearn import tree, metrics
 
 PERCENT_TRAIN = 70
-LOOPS = 20
-
 
 def shuffle_and_split(ds_fake, ds_correct):
     # print(f"Now splitting dataset with ratio {PERCENT_TRAIN}:{100 - PERCENT_TRAIN}")
@@ -62,48 +60,34 @@ def print_classification_report(X, y, validation_df):
     print(type(metrics.classification_report(y_val, y_pred)))
 
 
-def get_scores(fake, correct, csv):
-    somme = {
-        'custom': {'precision': 0, 'accuracy': 0},
-        'default': {'precision': 0, 'accuracy': 0}
+def get_custom_dataset(train_df, validation_df, csv=False):
+    if csv:
+        custom_train_df = train_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
+                                            "mediaCommentsAreDisabled", "mediaHashtagNumbers", "mediaHasLocationInfo",
+                                            "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
+        custom_validation_df = validation_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
+                                                    "mediaCommentsAreDisabled", "mediaHashtagNumbers",
+                                                    "mediaHasLocationInfo",
+                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
+                                                    axis=1)
+    else:
+        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+    return custom_train_df, custom_validation_df
+
+
+def get_scores(train_df, validation_df, csv=False):
+    scores = {
+        'precision': 0, 'accuracy': 0
     }
-    print(f"Calculating precision and accuracy {LOOPS} times")
-    for i in range(LOOPS):
-        train_df, validation_df = shuffle_and_split(fake, correct)
-        if csv:
-            custom_train_df = train_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
-                                             "mediaCommentsAreDisabled", "mediaHashtagNumbers", "mediaHasLocationInfo",
-                                             "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
-            custom_validation_df = validation_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
-                                                       "mediaCommentsAreDisabled", "mediaHashtagNumbers",
-                                                       "mediaHasLocationInfo",
-                                                       "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
-                                                      axis=1)
-        else:
-            custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-            custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        y_val, y_pred = fit_decision_tree(train_df.iloc[:, :-2], train_df.iloc[:, -1], validation_df)
-        cy_val, cy_pred = fit_decision_tree(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1],
-                                            custom_validation_df)
+    y_val, y_pred = fit_decision_tree(train_df.iloc[:, :-2], train_df.iloc[:, -1], validation_df)
 
-        somme['default']['accuracy'] += metrics.accuracy_score(y_val, y_pred)
-        somme['default']['precision'] += metrics.precision_score(y_val, y_pred)
-        somme['custom']['accuracy'] += metrics.accuracy_score(cy_val, cy_pred)
-        somme['custom']['precision'] += metrics.precision_score(cy_val, cy_pred)
-
-        print(f"{i+1}/{LOOPS}", end="\r")
-
-    for t in somme.keys():
-        for s in somme[t].keys():
-            somme[t][s] /= LOOPS
-
-    print('Done!\n\n')
-    return somme
+    scores['accuracy'] += metrics.accuracy_score(y_val, y_pred)
+    scores['precision'] += metrics.precision_score(y_val, y_pred)
+    return scores
 
 
-def print_scores(fake, correct, csv=False):
-    scores = get_scores(fake, correct, csv)
-    print('default precision:', "{:.3f}".format(scores['default']['precision']))
-    print('custom precision:', "{:.3f}".format(scores['custom']['precision']))
-    print('default accuracy:', "{:.3f}".format(scores['default']['accuracy']))
-    print('custom accuracy:', "{:.3f}".format(scores['custom']['accuracy']))
+def print_scores(train_df, validation_df, csv=False):
+    scores = get_scores(train_df, validation_df, csv)
+    print('precision:', "{:.3f}".format(scores['precision']))
+    print('accuracy:', "{:.3f}".format(scores['accuracy']))
