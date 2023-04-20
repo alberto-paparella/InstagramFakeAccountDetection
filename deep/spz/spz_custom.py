@@ -1,9 +1,7 @@
 import pandas as pd
-from tensorflow.keras.layers import Input, Dense, Normalization
+from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
-from deep.common import get_dataset_IJCE
-from tensorflow import convert_to_tensor
-import tensorflow as tf
+from deep.common import get_dataset_spz
 
 
 class LayerConfiguration:
@@ -12,20 +10,15 @@ class LayerConfiguration:
         self.activation_function = activation_function
 
 
-train, validation = get_dataset_IJCE(False)
+train, validation = get_dataset_spz(True)
 train: pd.DataFrame
 validation: pd.DataFrame
 print("Done loading data.")
 
-x = convert_to_tensor(train.iloc[:, :-2])
-y = convert_to_tensor(train.iloc[:, -1])
-normalizer = Normalization(axis=-1)
-normalizer.adapt(x)
-
 #for i in range(1):
 #    train = train.append(train)
 print(len(train.index))
-input_layer = Input(shape=16, name="input")
+input_layer = Input(shape=len(train.columns)-2, name="input")
 
 layers = [LayerConfiguration(32), LayerConfiguration(32)]
 lr = input_layer
@@ -39,4 +32,4 @@ model = Model(inputs=input_layer, outputs=output_layer)
 model.summary()
 
 model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
-model.fit(x=x, y=y, steps_per_epoch=1000, epochs=10)
+model.fit(x=train.iloc[:, :-2], y=train.iloc[:, -1], steps_per_epoch=1000, epochs=10)

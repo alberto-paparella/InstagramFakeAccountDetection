@@ -1,8 +1,7 @@
-import numpy as np
 import pandas as pd
-from tensorflow.keras.layers import Input, Dense, Reshape, concatenate
+from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
-from common import get_dataset
+from deep.common import get_dataset_IJCE
 
 
 class LayerConfiguration:
@@ -11,7 +10,7 @@ class LayerConfiguration:
         self.activation_function = activation_function
 
 
-train, validation = get_dataset(True)
+train, validation = get_dataset_IJCE(True)
 train: pd.DataFrame
 validation: pd.DataFrame
 print("Done loading data.")
