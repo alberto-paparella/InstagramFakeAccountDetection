@@ -16,9 +16,6 @@ idx = find_demarcator(default_dataset)
 fake = default_dataset[:idx]
 correct = default_dataset[idx:]
 
-train_df, validation_df = shuffle_and_split(fake, correct)
-custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df)
-
 ### EXPERIMENT ###
 avg_scores = {
     'default': {'precision': 0, 'accuracy': 0},
@@ -28,6 +25,9 @@ avg_scores = {
 print(f"Calculating precision and accuracy {LOOPS} times")
 
 for i in range(LOOPS):
+    # Get new train_df and validation_df, same for default and custom
+    train_df, validation_df = shuffle_and_split(fake, correct)
+    custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df)
 
     # Default scores
     scores = get_scores(train_df, validation_df)
