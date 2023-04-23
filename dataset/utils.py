@@ -1,9 +1,8 @@
-from dataset.normalizer import csv_importer_full
+from dataset.normalizer import csv_importer_full, json_importer_full
 import random
 import pandas as pd
 import os
 import sys
-
 
 PERCENT_TRAIN = 70
 
@@ -29,12 +28,8 @@ def shuffle_and_split(ds_fake, ds_correct):
     random.shuffle(ds_train)
     random.shuffle(ds_validation)
 
-    # print("Loading complete.")
-
     df_train = pd.DataFrame.from_dict(ds_train)
     df_validation = pd.DataFrame.from_dict(ds_validation)
-    # print(df_train)
-    # print(df_validation)
     return df_train, df_validation
 
 
@@ -53,16 +48,26 @@ def find_demarcator(dataset):
     return idx
 
 
+def get_fake_correct_default(csv):
+    if csv:
+        default_dataset = csv_importer_full("dataset/sources/user_fake_authentic_2class.csv")
+        idx = find_demarcator(default_dataset)
+        return default_dataset[:idx], default_dataset[idx:]
+    else:
+        return json_importer_full("dataset/sources/automatedAccountData.json", True), json_importer_full(
+            "dataset/sources/nonautomatedAccountData.json", False)
+
+
 def get_default_dataset_csv():
-    default_dataset = csv_importer_full("dataset/sources/user_fake_authentic_2class.csv")
-    idx = find_demarcator(default_dataset)
-    fake = default_dataset[:idx]
-    correct = default_dataset[idx:]
+    fake, correct = get_fake_correct_default(True)
     return shuffle_and_split(fake, correct)
 
 
-def get_custom_dataset(train_df, validation_df, csv=False):
+def get_custom_dataset(train_df, validation_df, csv):
     if csv:
+        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+    else:
         custom_train_df = train_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
                                          "mediaCommentsAreDisabled", "mediaHashtagNumbers", "mediaHasLocationInfo",
                                          "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
@@ -71,8 +76,5 @@ def get_custom_dataset(train_df, validation_df, csv=False):
                                                    "mediaHasLocationInfo",
                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
                                                   axis=1)
-    else:
-        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-    return custom_train_df, custom_validation_df
 
+    return custom_train_df, custom_validation_df

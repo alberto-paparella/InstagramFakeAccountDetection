@@ -17,6 +17,6 @@ def get_single_scores(train_df, validation_df):
     }
     y_val, y_pred = fit_random_forest(train_df.iloc[:, :-2], train_df.iloc[:, -1], validation_df)
 
-    scores['accuracy'] += metrics.accuracy_score(y_val, y_pred)
-    scores['precision'] += metrics.precision_score(y_val, y_pred)
+    scores['accuracy'] = metrics.accuracy_score(y_val, y_pred)
+    scores['precision'] = metrics.precision_score(y_val, y_pred)
     return scores

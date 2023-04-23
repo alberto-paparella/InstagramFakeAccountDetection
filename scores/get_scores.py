@@ -1,5 +1,4 @@
-from dataset.normalizer import json_importer_full
-from dataset.utils import shuffle_and_split, get_default_dataset_csv, get_custom_dataset
+from dataset.utils import shuffle_and_split, get_fake_correct_default, get_custom_dataset
 
 LOOPS = 10
 
@@ -10,19 +9,12 @@ def get_scores(get_single_scores, csv):
         'default': {'precision': 0, 'accuracy': 0},
         'custom': {'precision': 0, 'accuracy': 0}
     }
-
+    fake, correct = get_fake_correct_default(csv)
     print(f"Calculating precision and accuracy {LOOPS} times")
 
     for i in range(LOOPS):
-        if csv:
-            train_df, validation_df = get_default_dataset_csv()
-            custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df)
-        else:
-            fake = json_importer_full("dataset/sources/automatedAccountData.json", True)
-            correct = json_importer_full("dataset/sources/nonautomatedAccountData.json", False)
-
-            train_df, validation_df = shuffle_and_split(fake, correct)
-            custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, True)
+        train_df, validation_df = shuffle_and_split(fake, correct)
+        custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
 
         # Default scores
         scores = get_single_scores(train_df, validation_df)
