@@ -11,8 +11,8 @@ from sequoia_comparison.utils import experiment
 LOOPS = 500
 
 fake = json_importer_full("dataset/sources/automatedAccountData.json", True)
-real = json_importer_full("dataset/sources/nonautomatedAccountData.json", False)
+correct = json_importer_full("dataset/sources/nonautomatedAccountData.json", False)
 
 # Experiments
-experiment(fake, real, True, mode="dt", n_iter=100)   # DecisionTree
-experiment(fake, real, True, mode="lr", n_iter=100)   # LogisticRegression
+experiment(fake, correct, False, mode="dt", n_iter=100)   # DecisionTree
+experiment(fake, correct, False, mode="lr", n_iter=100)   # LogisticRegression
