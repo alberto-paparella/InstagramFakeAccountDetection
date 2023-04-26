@@ -43,8 +43,6 @@ modes:
  - "dt" => DecisionTree
  - "lr" => LogisticRegression
 '''
-
-
 def experiment(fake, correct, csv, mode="dt", n_iter=20):
     avg_scores = {
         'default': {'precision': 0, 'accuracy': 0},
