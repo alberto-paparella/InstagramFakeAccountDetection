@@ -8,11 +8,12 @@ del path
 from dataset.normalizer import json_importer_full
 from sequoia_comparison.utils import experiment
 
-LOOPS = 500
+n_exp = 500
 
 fake = json_importer_full("dataset/sources/automatedAccountData.json", True)
 correct = json_importer_full("dataset/sources/nonautomatedAccountData.json", False)
 
 # Experiments
-experiment(fake, correct, False, mode="dt", n_iter=100)   # DecisionTree
-experiment(fake, correct, False, mode="lr", n_iter=100)   # LogisticRegression
+experiment(fake, correct, csv=False, mode="dt", n_iter=n_exp)   # DecisionTree
+experiment(fake, correct, csv=False, mode="lr", n_iter=n_exp)   # LogisticRegression
+experiment(fake, correct, csv=False, mode="nb", n_iter=n_exp)   # NaiveBayes (LogisticRegression)
