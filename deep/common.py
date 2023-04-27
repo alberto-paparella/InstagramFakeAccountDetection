@@ -16,7 +16,7 @@ def get_dataset_IJCE(custom=False):
     correct = default_dataset[idx:]
     train_df, validation_df = shuffle_and_split(fake, correct)
     if custom:
-        custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df)
+        custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, True)
         return custom_train_df, custom_validation_df
     return train_df, validation_df
 
@@ -28,5 +28,5 @@ def get_dataset_spz(custom=False):
     correct = json_importer_full("dataset/sources/nonautomatedAccountData.json", False)
     train, validation = shuffle_and_split(fake, correct)
     if custom:
-        return get_custom_dataset(train, validation, True)
+        return get_custom_dataset(train, validation, False)
     return train, validation

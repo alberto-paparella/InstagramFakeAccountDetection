@@ -39,4 +39,5 @@ model = Model(inputs=input_layer, outputs=output_layer)
 model.summary()
 
 model.compile(optimizer=Adam(learning_rate=0.001), loss=tensorflow.losses.BinaryCrossentropy(from_logits=True), metrics=["accuracy"])
-model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=500, batch_size=64)
+model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=64)
+model.save_weights("default_spz")
