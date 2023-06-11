@@ -14,7 +14,6 @@ def run_model(train):
     x = convert_to_tensor(train.iloc[:, :-1])
     y = convert_to_tensor(train.iloc[:, -1])
 
-    print("Done loading data.")
     input_layer = Input(shape=len(train.columns)-1, name="input")
 
     layers = [LayerConfiguration(32), LayerConfiguration(32)]
@@ -26,8 +25,6 @@ def run_model(train):
     output_layer = Dense(1, activation="sigmoid", name="Output")(lr)
 
     model = Model(inputs=input_layer, outputs=output_layer)
-    model.summary()
-
-    model.compile(optimizer=Adam(learning_rate=0.001), loss=tensorflow.losses.BinaryCrossentropy(from_logits=True), metrics=["accuracy"])
-    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=64)
+    model.compile(optimizer=Adam(learning_rate=0.001), loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy"])
+    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=64, verbose=False)
     return model

@@ -1,17 +1,12 @@
 import pandas as pd
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
-from deep.common import get_dataset_IJCE, LayerConfiguration
+from deep.common import LayerConfiguration
 import tensorflow
 
 def run_model(train):
 
     train: pd.DataFrame
-    print("Done loading data.")
-
-    #for i in range(1):
-    #    train = train.append(train)
-    print(len(train.index))
     input_layer = Input(shape=8, name="input")
 
     layers = [LayerConfiguration(32), LayerConfiguration(32)]
@@ -23,8 +18,7 @@ def run_model(train):
     output_layer = Dense(1, activation="sigmoid", name="Output")(lr)
 
     model = Model(inputs=input_layer, outputs=output_layer)
-    model.summary()
 
-    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(from_logits=True), metrics=["accuracy"])
-    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=64)
+    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy"])
+    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=64, verbose=False)
     return model
