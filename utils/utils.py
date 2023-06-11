@@ -1,11 +1,15 @@
 from dataset.utils import get_custom_dataset, shuffle_and_split
 from sklearn import tree, metrics
 from sklearn.linear_model import LogisticRegression
+from deep.IJCE.IJCE_custom import run_model as run_ijce_custom
+from deep.IJCE.IJCE_default import run_model as run_ijce_default
+from deep.spz.spz_default import run_model as run_spz_default
+from deep.spz.spz_custom import run_model as run_spz_custom
 
 import numpy as np
 
 PERCENT_TRAIN = 70
-MAX_ITER = 5000 # Maximum number of iterations for Logistic Regressors
+MAX_ITER = 5000  # Maximum number of iterations for Logistic Regressors
 
 
 def fit_decision_tree(X, y, validation_df):
@@ -40,27 +44,36 @@ def print_scores(train_df, validation_df):
     print('precision:', "{:.3f}".format(scores['precision']))
     print('accuracy:', "{:.3f}".format(scores['accuracy']))
 
+
 '''
 basic naive bayes feature equation
 '''
-def pr(x, y_i, y):
-    p = x[y==y_i].sum(0)
-    return (p+1) / ((y==y_i).sum()+1)
 
-def nbsvm(x, y):
+
+def naive_bayes(x, y_i, y):
+    """Naive-Bayes function"""
+    p = x[y == y_i].sum(0)
+    return (p + 1) / ((y == y_i).sum() + 1)
+
+
+def naive_bayes_support_vector_machine(x, y):
     y = y.values
-    r = np.log(pr(x,1,y) / pr(x,0,y))
-    #m = LogisticRegression(C=4, dual=True) # This gives an error
+    r = np.log(naive_bayes(x, 1, y) / naive_bayes(x, 0, y))
+    # m = LogisticRegression(C=4, dual=True) # This gives an error
     m = LogisticRegression(C=4, dual=False, max_iter=MAX_ITER)
     x_nb = x.multiply(r)
     return m.fit(x_nb, y), r
+
 
 '''
 modes:
  - "dt" => DecisionTree
  - "lr" => LogisticRegression
  - "nb" => NaiveBayes (NB-SVM, but using LogisticRegression instead)
+ - "dl" => DeepLearning approach using neural networks
 '''
+
+
 def experiment(fake, correct, csv, mode="dt", n_iter=20):
     avg_scores = {
         'default': {'precision': 0, 'accuracy': 0},
@@ -73,6 +86,8 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
         print(f"Calculating precision and accuracy metrics for Logistic Regression over {n_iter} times")
     elif mode == "nb":
         print(f"Calculating precision and accuracy metrics for Naive Bayes (Logistic Regression) over {n_iter} times")
+    elif mode == "dl":
+        print(f"Calculating precision and accuracy metrics for Deep Learning over {n_iter} times")
     else:
         return -1
 
@@ -96,19 +111,36 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
             although in practice the two are nearly identical. NBSVM was introduced by Sida Wang and Chris Manning in the paper
             [Baselines and Bigrams: Simple, Good Sentiment and Topic Classiﬁcation](https://nlp.stanford.edu/pubs/sidaw12_simple_sentiment.pdf).
             '''
-            clf,r = nbsvm(train_df.iloc[:, :-2], train_df.iloc[:, -1])
+            clf, r = naive_bayes_support_vector_machine(train_df.iloc[:, :-2], train_df.iloc[:, -1])
+        elif mode == "dl":
+            print(f"Training default model {i + 1}/{n_iter}      ", end="\r")
+            # Get new DL
+            if csv:
+                # Go with IJCE
+                clf = run_ijce_default(train_df)
+            else:
+                clf = run_spz_default(train_df)
 
         # Get ground truth and predictions to measure performance
         X_val, y_val = validation_df.iloc[:, :-2], validation_df.iloc[:, -1]
-        if mode != "nb":
-            y_pred = clf.predict(X_val)
+        if mode == "dl":
+            precision = 0
+            accuracy = 0
+            for x in range(10):
+                loss, acc = clf.evaluate(x=validation_df.iloc[:, :-1], y=y_val, verbose=0)
+                accuracy += acc
+            avg_scores['default']['precision'] += accuracy/10
+            avg_scores['default']['accuracy'] += accuracy/10
         else:
-            y_pred = clf.predict(X_val.multiply(r))
+            if mode != "nb":
+                y_pred = clf.predict(X_val)
+            else:
+                y_pred = clf.predict(X_val.multiply(r))
 
-        # Default scores
-        scores = get_scores(y_val, y_pred)
-        avg_scores['default']['precision'] += scores['precision']
-        avg_scores['default']['accuracy'] += scores['accuracy']
+            # Default scores
+            scores = get_scores(y_val, y_pred)
+            avg_scores['default']['precision'] += scores['precision']
+            avg_scores['default']['accuracy'] += scores['accuracy']
 
         # Custom mode
         if mode == "dt":
@@ -121,21 +153,37 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
             clf = clf.fit(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1])
         elif mode == "nb":
             # Get new Naive Bayes (Logistic Regression)
-            clf,r = nbsvm(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1])
+            clf, r = naive_bayes_support_vector_machine(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1])
+        elif mode == "dl":
+            print(f"Training custom model {i + 1}/{n_iter}      ", end="\r")
+            # Get new DL
+            if csv:
+                # Go with IJCE
+                clf = run_ijce_custom(custom_train_df)
+            else:
+                clf = run_spz_custom(custom_train_df)
 
         # Get ground truth and predictions to measure performance
         X_val, y_val = custom_validation_df.iloc[:, :-2], custom_validation_df.iloc[:, -1]
-        if mode != "nb":
-            y_pred = clf.predict(X_val)
+        if mode == "dl":
+            precision = 0
+            accuracy = 0
+            for x in range(10):
+                loss, acc = clf.evaluate(x=custom_validation_df.iloc[:, :-1], y=y_val, verbose=0)
+                accuracy += acc
+            avg_scores['custom']['precision'] += accuracy/10
+            avg_scores['custom']['accuracy'] += accuracy/10
         else:
-            y_pred = clf.predict(X_val.multiply(r))
+            if mode != "nb":
+                y_pred = clf.predict(X_val)
+            else:
+                y_pred = clf.predict(X_val.multiply(r))
+            # Custom scores
+            scores = get_scores(y_val, y_pred)
+            avg_scores['custom']['precision'] += scores['precision']
+            avg_scores['custom']['accuracy'] += scores['accuracy']
 
-        # Custom scores
-        scores = get_scores(y_val, y_pred)
-        avg_scores['custom']['precision'] += scores['precision']
-        avg_scores['custom']['accuracy'] += scores['accuracy']
-
-        print(f"{i + 1}/{n_iter}", end="\r")
+        print(f"{i + 1}/{n_iter}                            ", end="\r")
 
     # Averaging
     for t in avg_scores.keys():

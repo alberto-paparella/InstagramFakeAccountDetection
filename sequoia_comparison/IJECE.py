@@ -7,11 +7,11 @@ del path
 
 from dataset.normalizer import csv_importer_full
 from dataset.utils import find_demarcator
-from sequoia_comparison.utils import experiment
+from utils.utils import experiment
 
 n_exp = 50 # Number of experiments
 
-default_dataset = csv_importer_full("dataset/sources/user_fake_authentic_2class.csv")
+default_dataset = csv_importer_full("../dataset/sources/user_fake_authentic_2class.csv")
 idx = find_demarcator(default_dataset)
 
 fake = default_dataset[:idx]
@@ -21,3 +21,4 @@ correct = default_dataset[idx:]
 experiment(fake, correct, csv=True, mode="dt", n_iter=n_exp)    # DecisionTree
 experiment(fake, correct, csv=True, mode="lr", n_iter=n_exp)    # LogisticRegression
 experiment(fake, correct, csv=True, mode="nb", n_iter=n_exp)    # NaiveBayes (LogisticRegression)
+experiment(fake, correct, csv=True, mode="dl", n_iter=n_exp)    # Deep Learning
