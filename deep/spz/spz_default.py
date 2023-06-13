@@ -9,13 +9,7 @@ from tensorflow import convert_to_tensor
 
 def run_model(train):
     train: pd.DataFrame
-
-
-    x = convert_to_tensor(train.iloc[:, :-1])
-    y = convert_to_tensor(train.iloc[:, -1])
-
     input_layer = Input(shape=len(train.columns)-1, name="input")
-
     layers = [LayerConfiguration(32), LayerConfiguration(32)]
     lr = input_layer
     i = 0

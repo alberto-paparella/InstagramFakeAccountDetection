@@ -7,7 +7,7 @@ import tensorflow
 def run_model(train):
 
     train: pd.DataFrame
-    input_layer = Input(shape=8, name="input")
+    input_layer = Input(shape=len(train.columns)-1, name="input")
 
     layers = [LayerConfiguration(32), LayerConfiguration(32)]
     lr = input_layer

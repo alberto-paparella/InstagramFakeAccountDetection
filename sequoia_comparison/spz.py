@@ -8,7 +8,7 @@ del path
 from dataset.normalizer import json_importer_full
 from utils.utils import experiment
 
-n_exp = 500
+n_exp = 5
 
 fake = json_importer_full("../dataset/sources/automatedAccountData.json", True)
 correct = json_importer_full("../dataset/sources/nonautomatedAccountData.json", False)

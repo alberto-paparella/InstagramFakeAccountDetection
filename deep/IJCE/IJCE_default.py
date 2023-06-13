@@ -12,7 +12,7 @@ def run_model(train):
 
     #for i in range(1):
     #    train = train.append(train)
-    input_layer = Input(shape=17, name="input")
+    input_layer = Input(shape=len(train.columns)-1, name="input")
 
     layers = [LayerConfiguration(32),LayerConfiguration(32)]
     lr = input_layer

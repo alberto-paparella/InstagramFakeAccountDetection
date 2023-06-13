@@ -17,7 +17,7 @@ def fit_decision_tree(X, y, validation_df):
     clf = clf.fit(X, y)
     # print("Fitting complete.")
 
-    X_val, y_val = validation_df.iloc[:, :-2], validation_df.iloc[:, -1]
+    X_val, y_val = validation_df.iloc[:, :-1], validation_df.iloc[:, -1]
     y_pred = clf.predict(X_val)
     return y_val, y_pred
 
@@ -100,18 +100,18 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
         if mode == "dt":
             # Get new Decision Tree
             clf = tree.DecisionTreeClassifier()
-            clf = clf.fit(train_df.iloc[:, :-2], train_df.iloc[:, -1])
+            clf = clf.fit(train_df.iloc[:, :-1], train_df.iloc[:, -1])
         elif mode == "lr":
             # Get new Logistic Regressor
             clf = LogisticRegression(random_state=0, max_iter=MAX_ITER)
-            clf = clf.fit(train_df.iloc[:, :-2], train_df.iloc[:, -1])
+            clf = clf.fit(train_df.iloc[:, :-1], train_df.iloc[:, -1])
         elif mode == "nb":
             '''
             Here we try using NBSVM (Naive Bayes - Support Vector Machine) but using sklearn's logistic regression rather than SVM,
             although in practice the two are nearly identical. NBSVM was introduced by Sida Wang and Chris Manning in the paper
             [Baselines and Bigrams: Simple, Good Sentiment and Topic Classiﬁcation](https://nlp.stanford.edu/pubs/sidaw12_simple_sentiment.pdf).
             '''
-            clf, r = naive_bayes_support_vector_machine(train_df.iloc[:, :-2], train_df.iloc[:, -1])
+            clf, r = naive_bayes_support_vector_machine(train_df.iloc[:, :-1], train_df.iloc[:, -1])
         elif mode == "dl":
             print(f"Training default model {i + 1}/{n_iter}      ", end="\r")
             # Get new DL
@@ -122,12 +122,12 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
                 clf = run_spz_default(train_df)
 
         # Get ground truth and predictions to measure performance
-        X_val, y_val = validation_df.iloc[:, :-2], validation_df.iloc[:, -1]
+        X_val, y_val = validation_df.iloc[:, :-1], validation_df.iloc[:, -1]
         if mode == "dl":
             precision = 0
             accuracy = 0
             for x in range(10):
-                loss, acc = clf.evaluate(x=validation_df.iloc[:, :-1], y=y_val, verbose=0)
+                loss, acc = clf.evaluate(x=X_val, y=y_val, verbose=0)
                 accuracy += acc
             avg_scores['default']['precision'] += accuracy/10
             avg_scores['default']['accuracy'] += accuracy/10
@@ -146,14 +146,14 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
         if mode == "dt":
             # Get new Decision Tree
             clf = tree.DecisionTreeClassifier()
-            clf = clf.fit(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1])
+            clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
         elif mode == "lr":
             # Get new Logistic Regressor
             clf = LogisticRegression(random_state=0, max_iter=2500)
-            clf = clf.fit(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1])
+            clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
         elif mode == "nb":
             # Get new Naive Bayes (Logistic Regression)
-            clf, r = naive_bayes_support_vector_machine(custom_train_df.iloc[:, :-2], custom_train_df.iloc[:, -1])
+            clf, r = naive_bayes_support_vector_machine(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
         elif mode == "dl":
             print(f"Training custom model {i + 1}/{n_iter}      ", end="\r")
             # Get new DL
@@ -164,12 +164,12 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
                 clf = run_spz_custom(custom_train_df)
 
         # Get ground truth and predictions to measure performance
-        X_val, y_val = custom_validation_df.iloc[:, :-2], custom_validation_df.iloc[:, -1]
+        X_val, y_val = custom_validation_df.iloc[:, :-1], custom_validation_df.iloc[:, -1]
         if mode == "dl":
             precision = 0
             accuracy = 0
             for x in range(10):
-                loss, acc = clf.evaluate(x=custom_validation_df.iloc[:, :-1], y=y_val, verbose=0)
+                loss, acc = clf.evaluate(x=X_val, y=y_val, verbose=0)
                 accuracy += acc
             avg_scores['custom']['precision'] += accuracy/10
             avg_scores['custom']['accuracy'] += accuracy/10
