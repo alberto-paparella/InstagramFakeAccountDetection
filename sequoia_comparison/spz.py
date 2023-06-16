@@ -14,9 +14,10 @@ fake = json_importer_full("../dataset/sources/automatedAccountData.json", True)
 correct = json_importer_full("../dataset/sources/nonautomatedAccountData.json", False)
 
 # Experiments
-experiment(fake, correct, csv=False, mode="dt", n_iter=n_exp)   # DecisionTree
-experiment(fake, correct, csv=False, mode="lr", n_iter=n_exp)   # LogisticRegression
-experiment(fake, correct, csv=False, mode="nb", n_iter=n_exp)   # NaiveBayes (LogisticRegression)
-experiment(fake, correct, csv=False, mode="dl", n_iter=n_exp)    # Deep Learning
+#experiment(fake, correct, csv=False, mode="dt", n_iter=n_exp)   # DecisionTree
+#experiment(fake, correct, csv=False, mode="lr", n_iter=n_exp)   # LogisticRegression
+#experiment(fake, correct, csv=False, mode="nb", n_iter=n_exp)   # NaiveBayes (LogisticRegression)
+experiment(fake, correct, csv=False, mode="rf", n_iter=n_exp)   # RandomForest
+#experiment(fake, correct, csv=False, mode="dl", n_iter=n_exp)    # Deep Learning
 
 input("Press ENTER to exit...")

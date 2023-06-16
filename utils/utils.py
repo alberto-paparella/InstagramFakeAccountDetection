@@ -1,6 +1,7 @@
 from dataset.utils import get_custom_dataset, shuffle_and_split
 from sklearn import tree, metrics
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from deep.IJCE.IJCE_custom import run_model as run_ijce_custom
 from deep.IJCE.IJCE_default import run_model as run_ijce_default
 from deep.spz.spz_default import run_model as run_spz_default
@@ -70,6 +71,7 @@ modes:
  - "dt" => DecisionTree
  - "lr" => LogisticRegression
  - "nb" => NaiveBayes (NB-SVM, but using LogisticRegression instead)
+ - "rf" => RandomForest approach
  - "dl" => DeepLearning approach using neural networks
 '''
 
@@ -86,6 +88,8 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
         print(f"Calculating precision and accuracy metrics for Logistic Regression over {n_iter} times")
     elif mode == "nb":
         print(f"Calculating precision and accuracy metrics for Naive Bayes (Logistic Regression) over {n_iter} times")
+    elif mode == "rf":
+        print(f"Calculating precision and accuracy metrics for Random Forests over {n_iter} times")
     elif mode == "dl":
         print(f"Calculating precision and accuracy metrics for Deep Learning over {n_iter} times")
     else:
@@ -112,6 +116,9 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
             [Baselines and Bigrams: Simple, Good Sentiment and Topic Classiﬁcation](https://nlp.stanford.edu/pubs/sidaw12_simple_sentiment.pdf).
             '''
             clf, r = naive_bayes_support_vector_machine(train_df.iloc[:, :-1], train_df.iloc[:, -1])
+        elif mode == "rf":
+            clf = RandomForestClassifier(max_depth=2, random_state=0)
+            clf = clf.fit(train_df.iloc[:, :-1], train_df.iloc[:, -1])
         elif mode == "dl":
             print(f"Training default model {i + 1}/{n_iter}      ", end="\r")
             # Get new DL
@@ -154,6 +161,9 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
         elif mode == "nb":
             # Get new Naive Bayes (Logistic Regression)
             clf, r = naive_bayes_support_vector_machine(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
+        elif mode == "rf":
+            clf = RandomForestClassifier(max_depth=2, random_state=0)
+            clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
         elif mode == "dl":
             print(f"Training custom model {i + 1}/{n_iter}      ", end="\r")
             # Get new DL

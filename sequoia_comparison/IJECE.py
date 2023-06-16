@@ -21,4 +21,5 @@ correct = default_dataset[idx:]
 #experiment(fake, correct, csv=True, mode="dt", n_iter=n_exp)    # DecisionTree
 #experiment(fake, correct, csv=True, mode="lr", n_iter=n_exp)    # LogisticRegression
 #experiment(fake, correct, csv=True, mode="nb", n_iter=n_exp)    # NaiveBayes (LogisticRegression)
-experiment(fake, correct, csv=True, mode="dl", n_iter=n_exp)    # Deep Learning
+experiment(fake, correct, csv=True, mode="rf", n_iter=n_exp)    # RandomForest
+#experiment(fake, correct, csv=True, mode="dl", n_iter=n_exp)    # Deep Learning
