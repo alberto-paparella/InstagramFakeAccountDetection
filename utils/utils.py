@@ -207,3 +207,4 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20):
 
     print('custom avg precision:', "{:.3f}".format(avg_scores['custom']['precision']))
     print('custom avg accuracy:', "{:.3f}".format(avg_scores['custom']['accuracy']))
+    return avg_scores
