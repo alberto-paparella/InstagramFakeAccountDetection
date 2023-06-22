@@ -52,7 +52,7 @@ def csv_importer_full(filename):
                 continue
             counter += 1
             result.append(
-                {"nmedia": float(row[0]), "flw": float(row[1]), "flg": float(row[2]), "biol": float(row[3]),
+                {"nmedia": float(row[0]), "nfollower": float(row[1]), "nfollowing": float(row[2]), "biol": float(row[3]),
                  "pic": float(row[4]),
                  "url": float(row[5]), "cl": float(row[6]), "cz": float(row[7]), "ni": float(row[8]),
                  "erl": float(row[9]), "erc": float(row[10]),

@@ -40,11 +40,11 @@ def main():
     correct_ijce = default_dataset[idx:]
     results = {"spz": dict(), "IJCE": dict()}
     for exp in exp_list:
-        print("Running test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'spz')...")
+        print("\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'spz')...")
         res = experiment(fake_spz, correct_spz, csv=False, mode=exp, n_iter=n_iter)
         results["spz"][exp] = res
         print("Running test on dataset 'IJCE' (internal name: 'IJCE')...")
-        experiment(fake_ijce, correct_ijce, csv=True, mode=exp, n_iter=n_iter)
+        res = experiment(fake_ijce, correct_ijce, csv=True, mode=exp, n_iter=n_iter)
         results["IJCE"][exp] = res
     datasets = ["spz", "IJCE"]
     wins = {"custom": 0, "default": 0}
