@@ -7,7 +7,7 @@ class LayerConfiguration:
         self.size = size
         self.activation_function = activation_function
 
-def get_dataset_IJCE():
+def get_dataset_IJECE():
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if not path in sys.path:
         sys.path.insert(1, path)

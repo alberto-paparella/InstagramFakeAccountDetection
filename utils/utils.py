@@ -2,8 +2,8 @@ from dataset.utils import get_custom_dataset, shuffle_and_split
 from sklearn import tree, metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from deep.IJCE.IJCE_custom import run_model as run_ijce_custom
-from deep.IJCE.IJCE_default import run_model as run_ijce_default
+from deep.IJECE.IJECE_custom import run_model as run_ijce_custom
+from deep.IJECE.IJECE_default import run_model as run_ijce_default
 from deep.spz.spz_default import run_model as run_spz_default
 from deep.spz.spz_custom import run_model as run_spz_custom
 
@@ -34,10 +34,11 @@ def print_classification_report(X, y, validation_df):
 
 def get_scores(y_val, y_pred):
     scores = {
-        'precision': 0, 'accuracy': 0
+        'precision': 0, 'accuracy': 0, 'recall': 0
     }
     scores['accuracy'] += metrics.accuracy_score(y_val, y_pred)
     scores['precision'] += metrics.precision_score(y_val, y_pred)
+    scores['recall'] += metrics.recall_score(y_val, y_pred)
     return scores
 
 
@@ -77,7 +78,7 @@ modes:
 '''
 
 
-def experiment(fake, correct, csv, mode="dt", n_iter=20, combine = False, demarcator = 700):
+def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700):
     avg_scores = {
         'default': {'precision': 0, 'accuracy': 0},
         'custom': {'precision': 0, 'accuracy': 0}
@@ -102,9 +103,13 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine = False, demarc
             train_df, validation_df = shuffle_and_split(fake, correct)
             custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
         else:
-            spz_dataset_fake, spz_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[:demarcator]), pd.DataFrame(data=correct[:demarcator]), False)
-            ijce_dataset_fake, ijce_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[demarcator:]), pd.DataFrame(data=correct[demarcator:]), True)
-            custom_train_df, custom_validation_df = shuffle_and_split(pd.concat([spz_dataset_fake, ijce_dataset_fake]).to_dict('records'), pd.concat([spz_dataset_correct, ijce_dataset_correct]).to_dict('records'))
+            spz_dataset_fake, spz_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[:demarcator]),
+                                                                       pd.DataFrame(data=correct[:demarcator]), False)
+            ijce_dataset_fake, ijce_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[demarcator:]),
+                                                                         pd.DataFrame(data=correct[demarcator:]), True)
+            custom_train_df, custom_validation_df = shuffle_and_split(
+                pd.concat([spz_dataset_fake, ijce_dataset_fake]).to_dict('records'),
+                pd.concat([spz_dataset_correct, ijce_dataset_correct]).to_dict('records'))
         if not combine:
             # Default mode
             if mode == "dt":
@@ -143,8 +148,8 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine = False, demarc
                 for x in range(10):
                     loss, acc = clf.evaluate(x=X_val, y=y_val, verbose=0)
                     accuracy += acc
-                avg_scores['default']['precision'] += accuracy/10
-                avg_scores['default']['accuracy'] += accuracy/10
+                avg_scores['default']['precision'] += accuracy / 10
+                avg_scores['default']['accuracy'] += accuracy / 10
             else:
                 if mode != "nb":
                     y_pred = clf.predict(X_val)
@@ -183,14 +188,14 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine = False, demarc
         # Get ground truth and predictions to measure performance
         X_val, y_val = custom_validation_df.iloc[:, :-1], custom_validation_df.iloc[:, -1]
         if mode == "dl":
-            #TODO Fix the precision counting!
+            # TODO Fix the precision counting!
             precision = 0
             accuracy = 0
             for x in range(10):
                 loss, acc = clf.evaluate(x=X_val, y=y_val, verbose=0)
                 accuracy += acc
-            avg_scores['custom']['precision'] += accuracy/10
-            avg_scores['custom']['accuracy'] += accuracy/10
+            avg_scores['custom']['precision'] += accuracy / 10
+            avg_scores['custom']['accuracy'] += accuracy / 10
         else:
             if mode != "nb":
                 y_pred = clf.predict(X_val)
@@ -210,10 +215,9 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine = False, demarc
 
     print('Done!')
 
-    print('default avg precision:', "{:.3f}".format(avg_scores['default']['precision']))
-    print('default avg accuracy:', "{:.3f}".format(avg_scores['default']['accuracy']))
-
-    print('custom avg precision:', "{:.3f}".format(avg_scores['custom']['precision']))
-    print('custom avg accuracy:', "{:.3f}".format(avg_scores['custom']['accuracy']))
+    print("Precision - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['precision'],
+                                                             avg_scores['custom']['precision']))
+    print("Accuracy - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['accuracy'],
+                                                            avg_scores['custom']['accuracy']))
     print("=============================")
     return avg_scores

@@ -36,17 +36,17 @@ def main():
     default_dataset = csv_importer_full("./dataset/sources/user_fake_authentic_2class.csv")
     idx = find_demarcator(default_dataset)
 
-    fake_ijce = default_dataset[:idx]
-    correct_ijce = default_dataset[idx:]
-    results = {"spz": dict(), "IJCE": dict()}
+    fake_IJECE = default_dataset[:idx]
+    correct_IJECE = default_dataset[idx:]
+    results = {"spz": dict(), "IJECE": dict()}
     for exp in exp_list:
         print("\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'spz')...")
         res = experiment(fake_spz, correct_spz, csv=False, mode=exp, n_iter=n_iter)
         results["spz"][exp] = res
-        print("Running test on dataset 'IJCE' (internal name: 'IJCE')...")
-        res = experiment(fake_ijce, correct_ijce, csv=True, mode=exp, n_iter=n_iter)
-        results["IJCE"][exp] = res
-    datasets = ["spz", "IJCE"]
+        print("Running test on dataset 'IJECE' (internal name: 'IJECE')...")
+        res = experiment(fake_IJECE, correct_IJECE, csv=True, mode=exp, n_iter=n_iter)
+        results["IJECE"][exp] = res
+    datasets = ["spz", "IJECE"]
     wins = {"custom": 0, "default": 0}
     for exp in exp_list:
         for dataset in datasets:

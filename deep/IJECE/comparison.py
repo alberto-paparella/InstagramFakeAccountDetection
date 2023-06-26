@@ -1,11 +1,11 @@
-from IJCE_custom import run_model as run_custom_model
-from IJCE_default import run_model as run_default_model
-from deep.common import get_dataset_IJCE
+from IJECE_custom import run_model as run_custom_model
+from IJECE_default import run_model as run_default_model
+from deep.common import get_dataset_IJECE
 
 eval_steps = 10
 custom_acc = 0
 def_acc = 0
-(default_train, default_validation), (custom_train, custom_validation) = get_dataset_IJCE()
+(default_train, default_validation), (custom_train, custom_validation) = get_dataset_IJECE()
 
 custom_model = run_custom_model(custom_train)
 default_model = run_default_model(default_train)

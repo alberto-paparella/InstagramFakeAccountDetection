@@ -12,8 +12,8 @@ idx = find_demarcator(default_dataset)
 
 fake = fake + default_dataset[:idx]
 correct = correct + default_dataset[idx:]
-# experiment(fake, correct, csv=False, mode="dt", n_iter=n_exp, combine=True)
-# experiment(fake, correct, csv=False, mode="lr", n_iter=n_exp, combine=True)
-# experiment(fake, correct, csv=False, mode="nb", n_iter=n_exp, combine=True)
-# experiment(fake, correct, csv=False, mode="rf", n_iter=n_exp, combine=True)
-experiment(fake, correct, csv=False, mode="dl", n_iter=n_exp, combine=True)
+experiment(fake, correct, csv=False, mode="dt", n_iter=n_exp, combine=True)
+experiment(fake, correct, csv=False, mode="lr", n_iter=n_exp, combine=True)
+experiment(fake, correct, csv=False, mode="nb", n_iter=n_exp, combine=True)
+experiment(fake, correct, csv=False, mode="rf", n_iter=n_exp, combine=True)
+# experiment(fake, correct, csv=False, mode="dl", n_iter=n_exp, combine=True)
