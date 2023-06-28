@@ -1,4 +1,5 @@
 from dataset.normalizer import csv_importer_full, json_importer_full
+from sklearn.model_selection import train_test_split
 import random
 import pandas as pd
 import os
@@ -80,3 +81,9 @@ def get_custom_dataset(train_df, validation_df, csv):
                                                   axis=1)
 
     return custom_train_df, custom_validation_df
+
+
+def get_deep_learning_dataset(fake, correct, name):
+    df_train, df_val = shuffle_and_split(fake, correct)
+    df_train.to_json(f'./{name}_df_train.json')
+    df_val.to_json(f'./{name}_df_val.json')
