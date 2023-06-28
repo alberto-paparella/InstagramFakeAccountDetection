@@ -1,6 +1,7 @@
 import pandas as pd
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
+from tensorflow.keras.metrics import Accuracy, Precision, Recall
 from deep.common import LayerConfiguration
 import tensorflow
 
@@ -19,6 +20,8 @@ def run_model(train):
 
     model = Model(inputs=input_layer, outputs=output_layer)
 
-    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy"])
-    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=64, verbose=False)
+    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy",
+                                                                                          Precision(),
+                                                                                          Recall()])
+    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=32, verbose=True)
     return model

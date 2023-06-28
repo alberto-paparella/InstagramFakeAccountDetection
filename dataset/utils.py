@@ -93,3 +93,4 @@ def get_deep_learning_dataset():
     spz_train, spz_val = shuffle_and_split(fake_json, correct_json)
     spz_train.to_json(f'./dataset/deep/spz_df_train.json')
     spz_val.to_json(f'./dataset/deep/spz_df_val.json')
+
