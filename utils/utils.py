@@ -34,11 +34,15 @@ def print_classification_report(X, y, validation_df):
 
 def get_scores(y_val, y_pred):
     scores = {
-        'precision': 0, 'accuracy': 0, 'recall': 0
+        'accuracy': 0,
+        'precision': 0,
+        'recall': 0,
+        'f1': 0
     }
     scores['accuracy'] += metrics.accuracy_score(y_val, y_pred)
     scores['precision'] += metrics.precision_score(y_val, y_pred)
     scores['recall'] += metrics.recall_score(y_val, y_pred)
+    scores['f1'] += metrics.f1_score(y_val, y_pred)
     return scores
 
 
@@ -68,32 +72,34 @@ def naive_bayes_support_vector_machine(x, y):
     return m.fit(x_nb, y), r
 
 
-'''
-modes:
- - "dt" => DecisionTree
- - "lr" => LogisticRegression
- - "nb" => NaiveBayes (NB-SVM, but using LogisticRegression instead)
- - "rf" => RandomForest approach
- - "dl" => DeepLearning approach using neural networks
-'''
-
 
 def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700):
+    '''
+    A function which execution an experiment fitting a model `n_iter` times and giving
+    back the `avg_scores` for various metrics such as `accuracy`, `precision`, `recall`, ...
+
+    `modes`:
+    - `dt` => DecisionTree
+    - `lr` => LogisticRegression
+    - `nb` => NaiveBayes (NB-SVM, but using LogisticRegression instead)
+    - `rf` => RandomForest approach
+    - `dl` => DeepLearning approach using neural networks
+    '''
     avg_scores = {
-        'default': {'precision': 0, 'accuracy': 0},
-        'custom': {'precision': 0, 'accuracy': 0}
+        'default': {'accuracy': 0, 'precision': 0, 'recall': 0, 'f1': 0},
+        'custom': {'accuracy': 0, 'precision': 0, 'recall': 0, 'f1': 0}
     }
 
     if mode == "dt":
-        print(f"Calculating precision and accuracy metrics for Decision Trees over {n_iter} times")
+        print(f"Calculating metrics for Decision Trees over {n_iter} times")
     elif mode == "lr":
-        print(f"Calculating precision and accuracy metrics for Logistic Regression over {n_iter} times")
+        print(f"Calculating metrics for Logistic Regression over {n_iter} times")
     elif mode == "nb":
-        print(f"Calculating precision and accuracy metrics for Naive Bayes (Logistic Regression) over {n_iter} times")
+        print(f"Calculating metrics for Naive Bayes (Logistic Regression) over {n_iter} times")
     elif mode == "rf":
-        print(f"Calculating precision and accuracy metrics for Random Forests over {n_iter} times")
+        print(f"Calculating metrics for Random Forests over {n_iter} times")
     elif mode == "dl":
-        print(f"Calculating precision and accuracy metrics for Deep Learning over {n_iter} times")
+        print(f"Calculating metrics for Deep Learning over {n_iter} times")
     else:
         return -1
 
@@ -158,8 +164,10 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
 
                 # Default scores
                 scores = get_scores(y_val, y_pred)
-                avg_scores['default']['precision'] += scores['precision']
                 avg_scores['default']['accuracy'] += scores['accuracy']
+                avg_scores['default']['precision'] += scores['precision']
+                avg_scores['default']['recall'] += scores['recall']
+                avg_scores['default']['f1'] += scores['f1']
 
         # Custom mode
         if mode == "dt":
@@ -203,8 +211,10 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                 y_pred = clf.predict(X_val.multiply(r))
             # Custom scores
             scores = get_scores(y_val, y_pred)
-            avg_scores['custom']['precision'] += scores['precision']
             avg_scores['custom']['accuracy'] += scores['accuracy']
+            avg_scores['custom']['precision'] += scores['precision']
+            avg_scores['custom']['recall'] += scores['recall']
+            avg_scores['custom']['f1'] += scores['f1']
 
         print(f"{i + 1}/{n_iter}                            ", end="\r")
 
@@ -215,9 +225,13 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
 
     print('Done!')
 
-    print("Precision - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['precision'],
-                                                             avg_scores['custom']['precision']))
     print("Accuracy - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['accuracy'],
                                                             avg_scores['custom']['accuracy']))
+    print("Precision - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['precision'],
+                                                             avg_scores['custom']['precision']))
+    print("Recall - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['recall'],
+                                                            avg_scores['custom']['recall']))
+    print("F1 - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['f1'],
+                                                            avg_scores['custom']['f1']))
     print("=============================")
     return avg_scores
