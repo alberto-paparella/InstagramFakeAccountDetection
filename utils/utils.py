@@ -72,6 +72,9 @@ def naive_bayes_support_vector_machine(x, y):
     return m.fit(x_nb, y), r
 
 
+def f1_score(precision, recall):
+    return 2 * (precision * recall) / (precision + recall)
+
 
 def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700):
     '''
@@ -149,6 +152,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
             X_val, y_val = validation_df.iloc[:, :-1], validation_df.iloc[:, -1]
             if mode == "dl":
                 # TODO: Fix the precision counting
+                '''
                 precision = 0
                 accuracy = 0
                 for x in range(10):
@@ -156,6 +160,20 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                     accuracy += acc
                 avg_scores['default']['precision'] += accuracy / 10
                 avg_scores['default']['accuracy'] += accuracy / 10
+                '''
+                accuracy = 0
+                precision = 0
+                recall = 0
+                n = 100
+                for _ in range(n):
+                    _, acc, prc, rec = clf.evaluate(x=X_val, y=y_val, verbose=0)
+                    accuracy += acc
+                    precision += prc
+                    recall += rec
+                avg_scores['default']['accuracy'] += accuracy / n
+                avg_scores['default']['precision'] += precision / n
+                avg_scores['default']['recall'] += recall / n
+                avg_scores['default']['f1'] += f1_score(precision / n, recall / n)
             else:
                 if mode != "nb":
                     y_pred = clf.predict(X_val)
@@ -197,6 +215,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
         X_val, y_val = custom_validation_df.iloc[:, :-1], custom_validation_df.iloc[:, -1]
         if mode == "dl":
             # TODO Fix the precision counting!
+            '''
             precision = 0
             accuracy = 0
             for x in range(10):
@@ -204,6 +223,20 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                 accuracy += acc
             avg_scores['custom']['precision'] += accuracy / 10
             avg_scores['custom']['accuracy'] += accuracy / 10
+            '''
+            accuracy = 0
+            precision = 0
+            recall = 0
+            n = 100
+            for _ in range(n):
+                _, acc, prc, rec = clf.evaluate(x=X_val, y=y_val, verbose=0)
+                accuracy += acc
+                precision += prc
+                recall += rec
+            avg_scores['custom']['accuracy'] += accuracy / n
+            avg_scores['custom']['precision'] += precision / n
+            avg_scores['custom']['recall'] += recall / n
+            avg_scores['custom']['f1'] += f1_score(precision / n, recall / n)
         else:
             if mode != "nb":
                 y_pred = clf.predict(X_val)

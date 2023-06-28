@@ -21,7 +21,7 @@ def run_model(train):
     output_layer = Dense(1, activation="sigmoid", name="Output")(lr)
 
     model = Model(inputs=input_layer, outputs=output_layer)
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=["accuracy",
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[Accuracy(),
                                                                          Precision(),
                                                                          Recall()])
     model.fit(x=x, y=y, epochs=100, batch_size=32, verbose=True)

@@ -20,7 +20,7 @@ def run_model(train):
 
     model = Model(inputs=input_layer, outputs=output_layer)
 
-    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy",
+    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=[Accuracy(),
                                                                                           Precision(),
                                                                                           Recall()])
     model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=32, verbose=True)
