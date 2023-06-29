@@ -65,11 +65,14 @@ def get_default_dataset_csv():
 
 def get_custom_dataset(train_df, validation_df, csv):
     if csv:
-        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+        #custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
         #custom_train_df = train_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
-        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+        custom_train_df = train_df.drop(["ni", "lt", "ahc"], axis=1)
+        #custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
         #custom_validation_df = validation_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
+        custom_validation_df = validation_df.drop(["ni", "lt", "ahc"], axis=1)
     else:
+        '''
         custom_train_df = train_df.drop(["mediaLikeNumbers",
                                          "followerToFollowing", "hasMedia",
                                          "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
@@ -77,6 +80,9 @@ def get_custom_dataset(train_df, validation_df, csv):
                                                    "followerToFollowing", "hasMedia",
                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
                                                   axis=1)
+                                                  '''
+        custom_train_df = train_df.drop(["url", "mediaLikeNumbers", "usernameLength", "usernameDigitCount"], axis=1)
+        custom_validation_df = validation_df.drop(["url", "mediaLikeNumbers", "usernameLength", "usernameDigitCount"], axis=1)
 
     return custom_train_df, custom_validation_df
 
