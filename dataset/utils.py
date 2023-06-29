@@ -3,6 +3,7 @@ import random
 import pandas as pd
 import os
 import sys
+import numpy as np
 
 PERCENT_TRAIN = 70
 
@@ -62,12 +63,18 @@ def get_default_dataset_csv():
     fake, correct = get_fake_correct_default(True)
     return shuffle_and_split(fake, correct)
 
+def get_internal_sum(series):
+    res = np.zeros((series.shape[0]))
+    for i,el in enumerate(series):
+        res[i] = sum(el)
+    return res
+
 
 def augment_spz(dataframe: pd.DataFrame):
-    dataframe["erl"] = compute_erl(sum(dataframe["mediaLikeNumbers"]),
+    dataframe["erl"] = compute_erl(get_internal_sum(dataframe["mediaLikeNumbers"]),
                                    dataframe["userMediaCount"],
                                    dataframe["userFollowerCount"])
-    dataframe["erc"] = compute_erc(sum(dataframe["mediaCommentNumbers"]),
+    dataframe["erc"] = compute_erc(get_internal_sum(dataframe["mediaCommentNumbers"]),
                                    dataframe["userMediaCount"],
                                    dataframe["userFollowerCount"])
     dataframe["avgtime"] = compute_avg_time(dataframe["mediaUploadTimes"])
@@ -90,10 +97,10 @@ def augment_spz(dataframe: pd.DataFrame):
 
 
 def common_augment(dataframe: pd.DataFrame):
-    dataframe["erl"] = compute_erl(sum(dataframe["mediaLikeNumbers"]),
+    dataframe["erl"] = compute_erl(get_internal_sum(dataframe["mediaLikeNumbers"]),
                                    dataframe["userMediaCount"],
                                    dataframe["userFollowerCount"])
-    dataframe["erc"] = compute_erc(sum(dataframe["mediaCommentNumbers"]),
+    dataframe["erc"] = compute_erc(get_internal_sum(dataframe["mediaCommentNumbers"]),
                                    dataframe["userMediaCount"],
                                    dataframe["userFollowerCount"])
     dataframe["avgtime"] = compute_avg_time(dataframe["mediaUploadTimes"])

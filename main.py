@@ -30,14 +30,17 @@ def main():
             print("La stringa inserita non è valida.")
             return
     n_iter = int(input("Quante volte devono venire ripetuti gli esperimenti? "))
+
+    # Import `Instagram Fake and Automated Account Detection` dataset
     fake_spz = json_importer_full("./dataset/sources/automatedAccountData.json", True)
     correct_spz = json_importer_full("./dataset/sources/nonautomatedAccountData.json", False)
 
+    # Import `IJECE` dataset
     default_dataset = csv_importer_full("./dataset/sources/user_fake_authentic_2class.csv")
     idx = find_demarcator(default_dataset)
-
     fake_IJECE = default_dataset[:idx]
     correct_IJECE = default_dataset[idx:]
+
     results = {"spz": dict(), "IJECE": dict()}
     for exp in exp_list:
         print("\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'spz')...")
