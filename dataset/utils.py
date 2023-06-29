@@ -70,12 +70,11 @@ def get_custom_dataset(train_df, validation_df, csv):
         custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
         #custom_validation_df = validation_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
     else:
-        custom_train_df = train_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
-                                         "mediaCommentsAreDisabled", "mediaHashtagNumbers", "mediaHasLocationInfo",
+        custom_train_df = train_df.drop(["mediaLikeNumbers",
+                                         "followerToFollowing", "hasMedia",
                                          "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
-        custom_validation_df = validation_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
-                                                   "mediaCommentsAreDisabled", "mediaHashtagNumbers",
-                                                   "mediaHasLocationInfo",
+        custom_validation_df = validation_df.drop(["mediaLikeNumbers",
+                                                   "followerToFollowing", "hasMedia",
                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
                                                   axis=1)
 

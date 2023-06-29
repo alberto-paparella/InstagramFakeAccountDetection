@@ -8,7 +8,7 @@ def main():
     print("Benvenut* nel launcher esperimenti del progetto d'esame del team 'PythonInMyBoot."
           "\nIndicare quali esperimenti effettuare sui dataset tra i seguenti:"
           "\n dt - Decision Tree"
-          "\n lr - Linear Regression"
+          "\n lr - Logistic Regression"
           "\n nb - Naive Bayes"
           "\n rf - Random Forest"
           "\n dl - Percettrone Multistrato"
