@@ -1,4 +1,4 @@
-from dataset.normalizer import csv_importer_full, json_importer_full
+from dataset.normalizer import csv_importer_full, json_importer_full, compute_erl, compute_erc, compute_avg_time
 import random
 import pandas as pd
 import os
@@ -63,22 +63,71 @@ def get_default_dataset_csv():
     return shuffle_and_split(fake, correct)
 
 
-def get_custom_dataset(train_df, validation_df, csv):
-    if csv:
-        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        #custom_train_df = train_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
-        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        #custom_validation_df = validation_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
-    else:
-        custom_train_df = train_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
-                                         "mediaCommentsAreDisabled", "mediaHashtagNumbers", "mediaHasLocationInfo",
-                                         "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
-        custom_validation_df = validation_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
-                                                   "mediaCommentsAreDisabled", "mediaHashtagNumbers",
-                                                   "mediaHasLocationInfo",
-                                                   "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
-                                                  axis=1)
+def augment_spz(dataframe: pd.DataFrame):
+    dataframe["erl"] = compute_erl(sum(dataframe["mediaLikeNumbers"]),
+                                   dataframe["userMediaCount"],
+                                   dataframe["userFollowerCount"])
+    dataframe["erc"] = compute_erc(sum(dataframe["mediaCommentNumbers"]),
+                                   dataframe["userMediaCount"],
+                                   dataframe["userFollowerCount"])
+    dataframe["avgtime"] = compute_avg_time(dataframe["mediaUploadTimes"])
+    dataframe["mediaLikeNumbersAvg"] = (
+        sum(dataframe["mediaLikeNumbers"]) / dataframe["userMediaCount"] if dataframe[
+                                                                                'userMediaCount'] != 0 else 0)
+    dataframe["mediaCommentNumbersAvg"] = (
+        sum(dataframe["mediaCommentNumbers"]) / dataframe["userMediaCount"] if dataframe[
+                                                                                   'userMediaCount'] != 0 else 0),
+    dataframe["mediaCommentsDisabledAvg"] = (
+        sum(dataframe["mediaCommentsAreDisabled"]) / dataframe["userMediaCount"] if
+        dataframe['userMediaCount'] != 0 else 0),
+    dataframe["mediaHashtagNumbersAvg"] = (
+        sum(dataframe["mediaHashtagNumbers"]) / dataframe["userMediaCount"] if dataframe[
+                                                                                   'userMediaCount'] != 0 else 0),
+    dataframe["mediaHasLocationInfoAvg"] = (
+        sum(dataframe["mediaHasLocationInfo"]) / dataframe["userMediaCount"] if dataframe[
+                                                                                    "userMediaCount"] != 0 else 0),
+    return dataframe
 
+
+def common_augment(dataframe: pd.DataFrame):
+    dataframe["erl"] = compute_erl(sum(dataframe["mediaLikeNumbers"]),
+                                   dataframe["userMediaCount"],
+                                   dataframe["userFollowerCount"])
+    dataframe["erc"] = compute_erc(sum(dataframe["mediaCommentNumbers"]),
+                                   dataframe["userMediaCount"],
+                                   dataframe["userFollowerCount"])
+    dataframe["avgtime"] = compute_avg_time(dataframe["mediaUploadTimes"])
+    return dataframe
+
+
+def get_custom_dataset(train_df, validation_df, csv, compatibility=True):
+    if csv:
+        if compatibility:
+            custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"],
+                                            axis=1)
+            custom_validation_df = validation_df.drop(
+                ["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+        else:
+            custom_train_df = train_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
+            custom_validation_df = validation_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
+    else:
+        train_df = common_augment(train_df)
+        validation_df = common_augment(validation_df)
+        if compatibility:
+            custom_train_df = train_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
+                                             "mediaCommentsAreDisabled", "mediaHashtagNumbers", "mediaHasLocationInfo",
+                                             "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
+            custom_validation_df = validation_df.drop(["mediaLikeNumbers", "mediaCommentNumbers",
+                                                       "mediaCommentsAreDisabled", "mediaHashtagNumbers",
+                                                       "mediaHasLocationInfo",
+                                                       "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
+                                                      axis=1)
+        else:
+            train_df: pd.DataFrame
+            custom_train_df = train_df
+            custom_train_df = augment_spz(custom_train_df)
+            custom_validation_df = validation_df
+            custom_validation_df = augment_spz(custom_validation_df)
     return custom_train_df, custom_validation_df
 
 
@@ -93,4 +142,3 @@ def get_deep_learning_dataset():
     spz_train, spz_val = shuffle_and_split(fake_json, correct_json)
     spz_train.to_json(f'./dataset/deep/spz_df_train.json')
     spz_val.to_json(f'./dataset/deep/spz_df_val.json')
-

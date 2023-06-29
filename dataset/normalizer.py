@@ -52,7 +52,8 @@ def csv_importer_full(filename):
                 continue
             counter += 1
             result.append(
-                {"nmedia": float(row[0]), "nfollower": float(row[1]), "nfollowing": float(row[2]), "biol": float(row[3]),
+                {"nmedia": float(row[0]), "nfollower": float(row[1]), "nfollowing": float(row[2]),
+                 "biol": float(row[3]),
                  "pic": float(row[4]),
                  "url": float(row[5]), "cl": float(row[6]), "cz": float(row[7]), "ni": float(row[8]),
                  "erl": float(row[9]), "erc": float(row[10]),
@@ -134,20 +135,12 @@ def json_importer_full(filename: str, fake=False) -> list:
             counter += 1
             result.append(
                 {"nmedia": row["userMediaCount"], "biol": row["userBiographyLength"], "url": row["userHasExternalUrl"],
-                 "erl": compute_erl(sum(row["mediaLikeNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
-                 "erc": compute_erc(sum(row["mediaCommentNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
-                 "avgtime": compute_avg_time(row["mediaUploadTimes"]), "nfollowing": row["userFollowingCount"],
-                 "nfollower": row["userFollowerCount"],
-                 "mediaLikeNumbers": (
-                     sum(row["mediaLikeNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
-                 "mediaCommentNumbers": (
-                     sum(row["mediaCommentNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
-                 "mediaCommentsAreDisabled": (
-                     sum(row["mediaCommentsAreDisabled"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
-                 "mediaHashtagNumbers": (
-                     sum(row["mediaHashtagNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
-                 "mediaHasLocationInfo": (
-                     sum(row["mediaHasLocationInfo"]) / row["userMediaCount"] if row["userMediaCount"] != 0 else 0),
+                 "nfollowing": row["userFollowingCount"], "nfollower": row["userFollowerCount"],
+                 "mediaLikeNumbers": row["mediaLikeNumbers"],
+                 "mediaCommentNumbers": row["mediaCommentNumbers"],
+                 "mediaCommentsAreDisabled": row["mediaCommentsAreDisabled"],
+                 "mediaHashtagNumbers": row["mediaHashtagNumbers"],
+                 "mediaHasLocationInfo": row["mediaHasLocationInfo"],
                  "userHasHighlighReels": row["userHasHighlighReels"], "usernameLength": row["usernameLength"],
                  "usernameDigitCount": row["usernameDigitCount"],
                  "fake": (1 if fake else 0)})
