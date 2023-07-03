@@ -63,12 +63,10 @@ def get_default_dataset_csv():
     return shuffle_and_split(fake, correct)
 
 
-def get_custom_dataset(train_df, validation_df, csv):
+def get_compatible_dataset(train_df, validation_df, csv):
     if csv:
         custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        #custom_train_df = train_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
         custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        #custom_validation_df = validation_df.drop(["ni", "lt", "ahc", "avgtime"], axis=1)
     else:
         custom_train_df = train_df.drop(["mediaLikeNumbers",
                                          "followerToFollowing", "hasMedia",
@@ -77,8 +75,38 @@ def get_custom_dataset(train_df, validation_df, csv):
                                                    "followerToFollowing", "hasMedia",
                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
                                                   axis=1)
-
     return custom_train_df, custom_validation_df
+
+
+def get_IJCE_custom_dataset(train_df, validation_df):
+    custom_train_df = train_df.drop(["ni", "lt", "ahc"], axis=1)
+    custom_validation_df = validation_df.drop(["ni", "lt", "ahc"], axis=1)
+    return custom_train_df, custom_validation_df
+
+
+def get_custom_dataset(train_df, validation_df, csv):
+    if csv:
+        return get_IJCE_custom_dataset(train_df, validation_df)
+    else:
+        return train_df, validation_df
+
+
+def get_default_dataset(train_df, validation_df, csv):
+    if csv:
+        return train_df, validation_df
+    else:
+        return get_spz_default_dataset(train_df, validation_df)
+
+
+def get_spz_default_dataset(train_df, validation_df):
+    default_train_df = train_df.drop(["mediaLikeNumbers",
+                                      "followerToFollowing", "hasMedia",
+                                      "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
+    default_validation_df = validation_df.drop(["mediaLikeNumbers",
+                                                "followerToFollowing", "hasMedia",
+                                                "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
+                                               axis=1)
+    return default_train_df, default_validation_df
 
 
 def get_deep_learning_dataset():
@@ -92,4 +120,3 @@ def get_deep_learning_dataset():
     spz_train, spz_val = shuffle_and_split(fake_json, correct_json)
     spz_train.to_json(f'./dataset/deep/spz_df_train.json')
     spz_val.to_json(f'./dataset/deep/spz_df_val.json')
-

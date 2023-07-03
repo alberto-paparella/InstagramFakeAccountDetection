@@ -133,11 +133,11 @@ def json_importer_full(filename: str, fake=False) -> list:
         for row in data:
             print(f"{counter}/{size}       ", end="\r")
             counter += 1
-            # Qui è stato tolto "avgtime": compute_avg_time(row["mediaUploadTimes"])
             result.append(
                 {"nmedia": row["userMediaCount"], "biol": row["userBiographyLength"], "url": row["userHasExternalUrl"],
                  "nfollowing": row["userFollowingCount"],
                  "nfollower": row["userFollowerCount"],
+                 "avgtime": compute_avg_time(row["mediaUploadTimes"]),
                  "mediaLikeNumbers": (
                      sum(row["mediaLikeNumbers"]) / sum(row["mediaCommentNumbers"]) if sum(
                          row["mediaCommentNumbers"]) != 0 else 0),

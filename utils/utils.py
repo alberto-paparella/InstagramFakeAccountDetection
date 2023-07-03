@@ -1,4 +1,4 @@
-from dataset.utils import get_custom_dataset, shuffle_and_split
+from dataset.utils import get_custom_dataset, shuffle_and_split, get_default_dataset
 from sklearn import tree, metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -111,6 +111,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
         if not combine:
             train_df, validation_df = shuffle_and_split(fake, correct)
             custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
+            default_train_df, default_validation_df = get_default_dataset(train_df, validation_df, csv)
         else:
             spz_dataset_fake, spz_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[:demarcator]),
                                                                        pd.DataFrame(data=correct[:demarcator]), False)
@@ -124,32 +125,32 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
             if mode == "dt":
                 # Get new Decision Tree
                 clf = tree.DecisionTreeClassifier()
-                clf = clf.fit(train_df.iloc[:, :-1], train_df.iloc[:, -1])
+                clf = clf.fit(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
             elif mode == "lr":
                 # Get new Logistic Regressor
                 clf = LogisticRegression(random_state=0, max_iter=MAX_ITER)
-                clf = clf.fit(train_df.iloc[:, :-1], train_df.iloc[:, -1])
+                clf = clf.fit(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
             elif mode == "nb":
                 '''
                 Here we try using NBSVM (Naive Bayes - Support Vector Machine) but using sklearn's logistic regression rather than SVM,
                 although in practice the two are nearly identical. NBSVM was introduced by Sida Wang and Chris Manning in the paper
                 [Baselines and Bigrams: Simple, Good Sentiment and Topic Classiﬁcation](https://nlp.stanford.edu/pubs/sidaw12_simple_sentiment.pdf).
                 '''
-                clf, r = naive_bayes_support_vector_machine(train_df.iloc[:, :-1], train_df.iloc[:, -1])
+                clf, r = naive_bayes_support_vector_machine(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
             elif mode == "rf":
                 clf = RandomForestClassifier(max_depth=2, random_state=0)
-                clf = clf.fit(train_df.iloc[:, :-1], train_df.iloc[:, -1])
+                clf = clf.fit(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
             elif mode == "dl":
                 print(f"Training default model {i + 1}/{n_iter}      ", end="\r")
                 # Get new DL
                 if csv:
                     # Go with IJCE
-                    clf = run_ijce_default(train_df)
+                    clf = run_ijce_default(default_train_df)
                 else:
-                    clf = run_spz_default(train_df)
+                    clf = run_spz_default(default_train_df)
 
             # Get ground truth and predictions to measure performance
-            X_val, y_val = validation_df.iloc[:, :-1], validation_df.iloc[:, -1]
+            X_val, y_val = default_validation_df.iloc[:, :-1], default_validation_df.iloc[:, -1]
             if mode == "dl":
                 # TODO: Fix the precision counting
                 '''
