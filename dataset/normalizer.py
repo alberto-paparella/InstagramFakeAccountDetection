@@ -134,7 +134,9 @@ def json_importer_full(filename: str, fake=False) -> list:
             print(f"{counter}/{size}       ", end="\r")
             counter += 1
             result.append(
-                {"nmedia": row["userMediaCount"], "biol": row["userBiographyLength"], "url": row["userHasExternalUrl"],
+                {"nmedia": row["userMediaCount"],
+                 "biol": row["userBiographyLength"],
+                 "url": row["userHasExternalUrl"],
                  "nfollowing": row["userFollowingCount"],
                  "nfollower": row["userFollowerCount"],
                  "avgtime": compute_avg_time(row["mediaUploadTimes"]),
@@ -146,7 +148,8 @@ def json_importer_full(filename: str, fake=False) -> list:
                  "followerToFollowing": (
                      row["userFollowerCount"] / row["userFollowingCount"] if row['userFollowingCount'] != 0 else 0),
                  "hasMedia": (1 if row["userMediaCount"] else 0),
-                 "userHasHighlighReels": row["userHasHighlighReels"], "usernameLength": row["usernameLength"],
+                 "userHasHighlighReels": row["userHasHighlighReels"],
+                 "usernameLength": row["usernameLength"],
                  "usernameDigitCount": row["usernameDigitCount"],
                  "fake": (1 if fake else 0)})
         print(f"Loaded {counter} entries from source {filename}")
