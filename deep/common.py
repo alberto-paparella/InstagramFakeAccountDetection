@@ -3,10 +3,15 @@ from dataset.utils import find_demarcator, shuffle_and_split, get_custom_dataset
 import os, sys
 import pandas as pd
 
+
 class LayerConfiguration:
     def __init__(self, size, activation_function="relu"):
         self.size = size
         self.activation_function = activation_function
+
+    def __repr__(self):
+        return f"{self.size}-{self.activation_function} "
+
 
 def get_dataset_IJECE():
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -24,4 +29,31 @@ def get_dataset_spz():
     os.chdir(path)
     train = pd.read_json("dataset/deep/SPZ_df_train.json")
     validation = pd.read_json("dataset/deep/SPZ_df_val.json")
-    return (train, validation),(get_custom_dataset(train, validation, False))
+    return (train, validation), (get_custom_dataset(train, validation, False))
+
+
+def train_save(name, train, runner, folder):
+    import ctypes  # An included library with Python install.
+
+    import datetime
+    print(f"Now training {name} model...")
+    (model, history, layers) = runner(train)
+    #ctypes.windll.user32.MessageBoxW(0, "Training done!", "TrainingProgress", 1)
+    #ans = input("Do you want to save this model? (y/any)")
+    #if ans == "y":
+    composition = ""
+    for elem in layers:
+        composition += str(elem) + "|"
+    model.save_weights(f"{folder}/{name}_{datetime.datetime.now().timestamp()}/{name}_{datetime.datetime.now().timestamp()}")
+    logfile = open(f'{folder}/log.csv', 'a+')
+    try:
+        f1_score = 2 * (history['precision'][-1] * history['recall'][-1]) / (
+                    history['precision'][-1] + history['recall'][-1])
+        logfile.write(
+            f"\n{name}_{datetime.datetime.now().timestamp()};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};")
+    except Exception:
+        f1_score = 2 * (history['precision_1'][-1] * history['recall_1'][-1]) / (
+                history['precision_1'][-1] + history['recall_1'][-1])
+        logfile.write(
+            f"\n{name}_{datetime.datetime.now().timestamp()};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};")
+    return model

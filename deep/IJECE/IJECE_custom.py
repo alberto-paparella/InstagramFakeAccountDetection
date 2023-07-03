@@ -4,10 +4,13 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.metrics import Accuracy, Precision, Recall
 from deep.common import LayerConfiguration
 import tensorflow
+from tensorflow import convert_to_tensor
 
 def run_model(train):
 
     train: pd.DataFrame
+    x = convert_to_tensor(train.iloc[:, :-1])
+    y = convert_to_tensor(train.iloc[:, -1])
     input_layer = Input(shape=len(train.columns)-1, name="input")
 
     layers = [LayerConfiguration(32), LayerConfiguration(32)]
@@ -20,8 +23,8 @@ def run_model(train):
 
     model = Model(inputs=input_layer, outputs=output_layer)
 
-    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=[Accuracy(),
+    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy",
                                                                                           Precision(),
                                                                                           Recall()])
-    model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=32, verbose=True)
-    return model
+    data = model.fit(x=x, y=y, epochs=100, batch_size=8, verbose=True)
+    return model, data.history, layers
