@@ -139,6 +139,8 @@ def json_importer_full(filename: str, fake=False) -> list:
                  "url": row["userHasExternalUrl"],
                  "nfollowing": row["userFollowingCount"],
                  "nfollower": row["userFollowerCount"],
+                 "erl": compute_erl(sum(row["mediaLikeNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
+                 "erc": compute_erc(sum(row["mediaCommentNumbers"]), row["userMediaCount"], row["userFollowerCount"]),
                  "avgtime": compute_avg_time(row["mediaUploadTimes"]),
                  "mediaLikeNumbers": (
                      sum(row["mediaLikeNumbers"]) / sum(row["mediaCommentNumbers"]) if sum(
@@ -147,6 +149,12 @@ def json_importer_full(filename: str, fake=False) -> list:
                      sum(row["mediaHashtagNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
                  "followerToFollowing": (
                      row["userFollowerCount"] / row["userFollowingCount"] if row['userFollowingCount'] != 0 else 0),
+                 "mediaCommentNumbers": (
+                     sum(row["mediaCommentNumbers"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
+                 "mediaCommentsAreDisabled": (
+                     sum(row["mediaCommentsAreDisabled"]) / row["userMediaCount"] if row['userMediaCount'] != 0 else 0),
+                 "mediaHasLocationInfo": (
+                     sum(row["mediaHasLocationInfo"]) / row["userMediaCount"] if row["userMediaCount"] != 0 else 0),
                  "hasMedia": (1 if row["userMediaCount"] else 0),
                  "userHasHighlighReels": row["userHasHighlighReels"],
                  "usernameLength": row["usernameLength"],

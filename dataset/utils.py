@@ -70,10 +70,14 @@ def get_compatible_dataset(train_df, validation_df, csv):
     else:
         custom_train_df = train_df.drop(["mediaLikeNumbers",
                                          "followerToFollowing", "hasMedia",
-                                         "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
+                                         "userHasHighlighReels", "usernameLength", "usernameDigitCount",
+                                         "mediaHashtagNumbers", "mediaCommentNumbers", "mediaCommentsAreDisabled",
+                                         "mediaHasLocationInfo"], axis=1)
         custom_validation_df = validation_df.drop(["mediaLikeNumbers",
                                                    "followerToFollowing", "hasMedia",
-                                                   "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
+                                                   "userHasHighlighReels", "usernameLength", "usernameDigitCount",
+                                                   "mediaHashtagNumbers", "mediaCommentNumbers",
+                                                   "mediaCommentsAreDisabled", "mediaHasLocationInfo"],
                                                   axis=1)
     return custom_train_df, custom_validation_df
 
@@ -99,12 +103,24 @@ def get_default_dataset(train_df, validation_df, csv):
 
 
 def get_spz_default_dataset(train_df, validation_df):
-    default_train_df = train_df.drop(["mediaLikeNumbers",
-                                      "followerToFollowing", "hasMedia",
-                                      "userHasHighlighReels", "usernameLength", "usernameDigitCount"], axis=1)
-    default_validation_df = validation_df.drop(["mediaLikeNumbers",
-                                                "followerToFollowing", "hasMedia",
-                                                "userHasHighlighReels", "usernameLength", "usernameDigitCount"],
+    """
+    Da tenere: nmedia, follower, following, HasHighlightReels, Number of tags, average hashtag numbers, Average media likes,
+    FFR, media or not
+    :param train_df:
+    :param validation_df:
+    :return:
+    """
+    default_train_df = train_df.drop(["biol",
+                                      "url", "erl", "erc", "avgtime",
+                                      "userHasHighlighReels", "usernameLength", "usernameDigitCount",
+                                      "mediaCommentNumbers", "mediaCommentsAreDisabled", "mediaHasLocationInfo",
+                                      "usernameLength", "usernameDigitCount"], axis=1)
+    default_validation_df = validation_df.drop(["biol",
+                                                "url", "erl", "erc", "avgtime",
+                                                "userHasHighlighReels", "usernameLength", "usernameDigitCount",
+                                                "mediaCommentNumbers", "mediaCommentsAreDisabled",
+                                                "mediaHasLocationInfo",
+                                                "usernameLength", "usernameDigitCount"],
                                                axis=1)
     return default_train_df, default_validation_df
 
@@ -113,10 +129,42 @@ def get_deep_learning_dataset():
     fake_csv, correct_csv = get_fake_correct_default(True)
     fake_json, correct_json = get_fake_correct_default(False)
 
+    # IJCE dataset
     ijece_train, ijece_val = shuffle_and_split(fake_csv, correct_csv)
     ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
     ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
 
+    # SPZ dataset
     spz_train, spz_val = shuffle_and_split(fake_json, correct_json)
     spz_train.to_json(f'./dataset/deep/spz_df_train.json')
     spz_val.to_json(f'./dataset/deep/spz_df_val.json')
+
+    # Balanced joined dataset
+    random.shuffle(fake_csv)
+    ijece_correct_part = correct_csv[:700]
+    ijece_fake_part = fake_csv[:700]
+    partial_fake = fake_json + ijece_fake_part
+    partial_correct = correct_json + ijece_correct_part
+    partial_train, partial_validation = treat_combined(partial_fake, partial_correct)
+    partial_train.to_json(f'./dataset/deep/combo_partial_df_train.json')
+    partial_validation.to_json(f'./dataset/deep/combo_partial_df_val.json')
+
+    # Unbalanced joined dataset
+    combined_fake = fake_json + fake_csv
+    combined_correct = fake_json + fake_csv
+    combined_train, combined_validation = treat_combined(combined_fake, combined_correct)
+    combined_train.to_json(f'./dataset/deep/combo_full_df_train.json')
+    combined_validation.to_json(f'./dataset/deep/combo_full_df_val.json')
+
+
+def treat_combined(fake, correct, demarcator=700):
+    spz_dataset_fake, spz_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
+                                                                   pd.DataFrame(data=correct[:demarcator]),
+                                                                   False)
+    ijece_dataset_fake, ijece_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[demarcator:]),
+                                                                       pd.DataFrame(data=correct[demarcator:]),
+                                                                       True)
+    custom_train_df, custom_validation_df = shuffle_and_split(
+        pd.concat([spz_dataset_fake, ijece_dataset_fake]).to_dict('records'),
+        pd.concat([spz_dataset_correct, ijece_dataset_correct]).to_dict('records'))
+    return custom_train_df, custom_validation_df
