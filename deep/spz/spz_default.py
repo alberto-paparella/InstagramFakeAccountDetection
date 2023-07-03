@@ -20,7 +20,7 @@ def run_model(train):
     output_layer = Dense(1, activation="sigmoid", name="Output")(lr)
 
     model = Model(inputs=input_layer, outputs=output_layer)
-    model.compile(optimizer=Adam(learning_rate=0.001), loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy",
+    model.compile(optimizer=Adam(learning_rate=0.001), loss=tensorflow.losses.BinaryCrossentropy(), metrics=[Accuracy(),
                                                                                                     Precision(),
                                                                                                     Recall()])
     model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=100, batch_size=1, verbose=True)
