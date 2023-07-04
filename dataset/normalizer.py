@@ -57,8 +57,10 @@ def csv_importer_full(filename):
                  "pic": float(row[4]),
                  "url": float(row[5]), "cl": float(row[6]), "cz": float(row[7]), "ni": float(row[8]),
                  "erl": float(row[9]), "erc": float(row[10]),
-                 "lt": float(row[11]), "ahc": float(row[12]), "pr": float(row[13]), "fo": float(row[14]),
+                 "lt": float(row[11]), "mediaHashtagNumbers": float(row[12]), "pr": float(row[13]), "fo": float(row[14]),
                  "cs": float(row[15]), "avgtime": float(row[16]),
+                 "followerToFollowing": (float(row[1])/float(row[2]) if float(row[2]) != 0 else 0),
+                 "hasMedia": (1 if float(row[0]) else 0),
                  "fake": (1 if row[17] == "f" else 0)})
     print(f"Loaded {counter} entries from source {filename}")
     return result

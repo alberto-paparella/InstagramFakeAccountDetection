@@ -32,7 +32,22 @@ def get_dataset_spz():
     return get_default_dataset(train_df, validation_df, False), get_custom_dataset(train_df, validation_df, False)
 
 
-def train_save(name, train, runner, folder):
+def get_dataset_combined(full=False):
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if not path in sys.path:
+        sys.path.insert(1, path)
+    os.chdir(path)
+    del path
+    if full:
+        train_df = pd.read_json("dataset/deep/combo_full_df_train.json")
+        validation_df = pd.read_json("dataset/deep/combo_full_df_val.json")
+    else:
+        train_df = pd.read_json("dataset/deep/combo_partial_df_train.json")
+        validation_df = pd.read_json("dataset/deep/combo_partial_df_val.json")
+    return train_df, validation_df
+
+
+def train_save(name, train, runner, folder, timestamp):
     import ctypes  # An included library with Python install.
 
     import datetime
@@ -50,10 +65,12 @@ def train_save(name, train, runner, folder):
         f1_score = 2 * (history['precision'][-1] * history['recall'][-1]) / (
                     history['precision'][-1] + history['recall'][-1])
         logfile.write(
-            f"\n{name}_{datetime.datetime.now().timestamp()};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};")
+            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};")
     except Exception:
         f1_score = 2 * (history['precision_1'][-1] * history['recall_1'][-1]) / (
                 history['precision_1'][-1] + history['recall_1'][-1])
         logfile.write(
-            f"\n{name}_{datetime.datetime.now().timestamp()};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};")
+            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};")
     return model
+
+

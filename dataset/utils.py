@@ -65,39 +65,44 @@ def get_default_dataset_csv():
 
 def get_compatible_dataset(train_df, validation_df, csv):
     if csv:
-        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
-        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "ahc", "pr", "fo", "cs"], axis=1)
+        custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "pr", "fo", "cs"], axis=1)
+        custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "pr", "fo", "cs"], axis=1)
     else:
         custom_train_df = train_df.drop(["mediaLikeNumbers",
-                                         "followerToFollowing", "hasMedia",
                                          "userHasHighlighReels", "usernameLength", "usernameDigitCount",
-                                         "mediaHashtagNumbers", "mediaCommentNumbers", "mediaCommentsAreDisabled",
+                                         "mediaCommentNumbers", "mediaCommentsAreDisabled",
                                          "mediaHasLocationInfo", "userTagsCount"], axis=1)
         custom_validation_df = validation_df.drop(["mediaLikeNumbers",
-                                                   "followerToFollowing", "hasMedia",
                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount",
-                                                   "mediaHashtagNumbers", "mediaCommentNumbers",
-                                                   "mediaCommentsAreDisabled", "mediaHasLocationInfo", "userTagsCount"],
+                                                   "mediaCommentNumbers", "mediaCommentsAreDisabled",
+                                                   "mediaHasLocationInfo",
+                                                   "userTagsCount"],
                                                   axis=1)
     return custom_train_df, custom_validation_df
 
 
-def get_IJCE_custom_dataset(train_df, validation_df):
-    custom_train_df = train_df.drop(["ni", "lt", "ahc"], axis=1)
-    custom_validation_df = validation_df.drop(["ni", "lt", "ahc"], axis=1)
+def get_ijece_custom_dataset(train_df, validation_df):
+    custom_train_df = train_df.drop(["ni", "lt", "mediaHashtagNumbers"], axis=1)
+    custom_validation_df = validation_df.drop(["ni", "lt", "mediaHashtagNumbers"], axis=1)
     return custom_train_df, custom_validation_df
 
 
 def get_custom_dataset(train_df, validation_df, csv):
     if csv:
-        return get_IJCE_custom_dataset(train_df, validation_df)
+        return get_ijece_custom_dataset(train_df, validation_df)
     else:
         return train_df, validation_df
 
 
+def get_ijece_default_dataset(train_df, validation_df):
+    custom_train_df = train_df.drop(["followerToFollowing", "hasMedia"], axis=1)
+    custom_validation_df = validation_df.drop(["followerToFollowing", "hasMedia"], axis=1)
+    return custom_train_df, custom_validation_df
+
+
 def get_default_dataset(train_df, validation_df, csv):
     if csv:
-        return train_df, validation_df
+        return get_ijece_default_dataset(train_df, validation_df)
     else:
         return get_spz_default_dataset(train_df, validation_df)
 
@@ -141,6 +146,7 @@ def get_deep_learning_dataset():
 
     # Balanced joined dataset
     random.shuffle(fake_csv)
+    random.shuffle(correct_csv)
     ijece_correct_part = correct_csv[:700]
     ijece_fake_part = fake_csv[:700]
     partial_fake = fake_json + ijece_fake_part

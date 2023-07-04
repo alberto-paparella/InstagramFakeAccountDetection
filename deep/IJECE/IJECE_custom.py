@@ -13,7 +13,7 @@ def run_model(train):
     y = convert_to_tensor(train.iloc[:, -1])
     input_layer = Input(shape=len(train.columns)-1, name="input")
 
-    layers = [LayerConfiguration(32), LayerConfiguration(32)]
+    layers = [LayerConfiguration(32), LayerConfiguration(32), LayerConfiguration(16)]
     lr = input_layer
     i = 0
     for layer in layers:

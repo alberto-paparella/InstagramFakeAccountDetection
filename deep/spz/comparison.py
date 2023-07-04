@@ -1,6 +1,8 @@
+import datetime
+
 from spz_custom import run_model as run_custom_model
 from spz_default import run_model as run_default_model
-from deep.common import get_dataset_spz
+from deep.common import get_dataset_spz, train_save
 
 eval_steps = 10
 custom_acc = 0
@@ -11,8 +13,10 @@ results = {"custom": {"accuracy": 0, "loss": 0, "precision": 0, "recall": 0},
 
 (default_train, default_validation), (custom_train, custom_validation) = get_dataset_spz()
 
-custom_model = run_custom_model(custom_train)
-default_model = run_default_model(default_train)
+timestamp = datetime.datetime.now().timestamp()
+
+custom_model = train_save("SPZ_CUSTOM", custom_train, run_custom_model, "./deep/SPZ/checkpoint", timestamp)
+default_model = train_save("SPZ_DEFAULT", default_train, run_default_model, "./deep/SPZ/checkpoint", timestamp)
 
 print(f"Now evaluating custom model {eval_steps} times...")
 for i in range(eval_steps):
@@ -32,4 +36,4 @@ for i in range(eval_steps):
     results["default"]["recall"] += recall
 
 for elem in ["accuracy", "loss", "precision", "recall"]:
-    print(f"{elem}: Custom {results['custom'][elem]/eval_steps} , Default: Custom {results['default'][elem]/eval_steps}")
+    print(f"{elem}: Custom {results['custom'][elem]/eval_steps} , Default: {results['default'][elem]/eval_steps}")

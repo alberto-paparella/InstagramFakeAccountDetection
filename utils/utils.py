@@ -6,7 +6,8 @@ from deep.IJECE.IJECE_custom import run_model as run_ijce_custom
 from deep.IJECE.IJECE_default import run_model as run_ijce_default
 from deep.spz.spz_default import run_model as run_spz_default
 from deep.spz.spz_custom import run_model as run_spz_custom
-
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 import numpy as np
 import pandas as pd
 
@@ -76,6 +77,7 @@ def f1_score(precision, recall):
     return 2 * (precision * recall) / (precision + recall)
 
 
+@ignore_warnings(category=ConvergenceWarning)
 def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700):
     '''
     A function which execution an experiment fitting a model `n_iter` times and giving
@@ -117,8 +119,8 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                                                                            pd.DataFrame(data=correct[:demarcator]),
                                                                            False)
             ijece_dataset_fake, ijece_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[demarcator:]),
-                                                                             pd.DataFrame(data=correct[demarcator:]),
-                                                                             True)
+                                                                               pd.DataFrame(data=correct[demarcator:]),
+                                                                               True)
             custom_train_df, custom_validation_df = shuffle_and_split(
                 pd.concat([spz_dataset_fake, ijece_dataset_fake]).to_dict('records'),
                 pd.concat([spz_dataset_correct, ijece_dataset_correct]).to_dict('records'))
