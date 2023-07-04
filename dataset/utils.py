@@ -72,12 +72,12 @@ def get_compatible_dataset(train_df, validation_df, csv):
                                          "followerToFollowing", "hasMedia",
                                          "userHasHighlighReels", "usernameLength", "usernameDigitCount",
                                          "mediaHashtagNumbers", "mediaCommentNumbers", "mediaCommentsAreDisabled",
-                                         "mediaHasLocationInfo"], axis=1)
+                                         "mediaHasLocationInfo", "userTagsCount"], axis=1)
         custom_validation_df = validation_df.drop(["mediaLikeNumbers",
                                                    "followerToFollowing", "hasMedia",
                                                    "userHasHighlighReels", "usernameLength", "usernameDigitCount",
                                                    "mediaHashtagNumbers", "mediaCommentNumbers",
-                                                   "mediaCommentsAreDisabled", "mediaHasLocationInfo"],
+                                                   "mediaCommentsAreDisabled", "mediaHasLocationInfo", "userTagsCount"],
                                                   axis=1)
     return custom_train_df, custom_validation_df
 

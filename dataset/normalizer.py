@@ -157,6 +157,7 @@ def json_importer_full(filename: str, fake=False) -> list:
                      sum(row["mediaHasLocationInfo"]) / row["userMediaCount"] if row["userMediaCount"] != 0 else 0),
                  "hasMedia": (1 if row["userMediaCount"] else 0),
                  "userHasHighlighReels": row["userHasHighlighReels"],
+                 "userTagsCount": row["userTagsCount"],
                  "usernameLength": row["usernameLength"],
                  "usernameDigitCount": row["usernameDigitCount"],
                  "fake": (1 if fake else 0)})
