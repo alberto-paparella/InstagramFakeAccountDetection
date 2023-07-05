@@ -5,24 +5,24 @@ import random
 
 n_exp = 5
 
-fake = json_importer_full("../dataset/sources/automatedAccountData.json", True)
-correct = json_importer_full("../dataset/sources/nonautomatedAccountData.json", False)
+fake_spz = json_importer_full("../dataset/sources/automatedAccountData.json", True)
+correct_spz = json_importer_full("../dataset/sources/nonautomatedAccountData.json", False)
 
-default_dataset = csv_importer_full("../dataset/sources/user_fake_authentic_2class.csv")
-idx = find_demarcator(default_dataset)
+ijece = csv_importer_full("../dataset/sources/user_fake_authentic_2class.csv")
+idx = find_demarcator(ijece)
 
 experiments = ["dt", "lr", "nb", "rf", "dl"]
 
 dataset = {"full": dict(), "partial": dict()}
 
-dataset["full"]["fake"] = fake + default_dataset[:idx]
-dataset["full"]["correct"] = correct + default_dataset[idx:]
-d_d_f = default_dataset[:idx]
-random.shuffle(d_d_f)
-d_d_c = default_dataset[idx:]
-random.shuffle(d_d_c)
-dataset["partial"]["fake"] = fake + d_d_f[:700]
-dataset["partial"]["correct"] = correct + d_d_c[:700]
+dataset["full"]["fake"] = fake_spz + ijece[:idx]
+dataset["full"]["correct"] = correct_spz + ijece[idx:]
+ijece_fake = ijece[:idx]
+random.shuffle(ijece_fake)
+ijece_correct = ijece[idx:]
+random.shuffle(ijece_correct)
+dataset["partial"]["fake"] = fake_spz + ijece_fake[:700]
+dataset["partial"]["correct"] = correct_spz + ijece_correct[:700]
 
 print("\n================\n Running experiment on limited dataset... \n================\n")
 

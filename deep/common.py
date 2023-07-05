@@ -1,5 +1,5 @@
 from dataset.normalizer import csv_importer_full, json_importer_full
-from dataset.utils import find_demarcator, shuffle_and_split, get_custom_dataset
+from dataset.utils import find_demarcator, shuffle_and_split, get_custom_dataset, get_default_dataset
 import os, sys
 import pandas as pd
 
@@ -21,39 +21,58 @@ def get_dataset_IJECE():
     del path
     train_df = pd.read_csv("dataset/deep/IJECE_df_train.csv")
     validation_df = pd.read_csv("dataset/deep/IJECE_df_val.csv")
-    return (train_df, validation_df), (get_custom_dataset(train_df, validation_df, True))
+    return get_default_dataset(train_df, validation_df, True), get_custom_dataset(train_df, validation_df, True)
 
 
 def get_dataset_spz():
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     os.chdir(path)
-    train = pd.read_json("dataset/deep/SPZ_df_train.json")
-    validation = pd.read_json("dataset/deep/SPZ_df_val.json")
-    return (train, validation), (get_custom_dataset(train, validation, False))
+    train_df = pd.read_json("dataset/deep/SPZ_df_train.json")
+    validation_df = pd.read_json("dataset/deep/SPZ_df_val.json")
+    return get_default_dataset(train_df, validation_df, False), get_custom_dataset(train_df, validation_df, False)
 
 
-def train_save(name, train, runner, folder):
-    import ctypes  # An included library with Python install.
+def get_dataset_combined(full=False):
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if not path in sys.path:
+        sys.path.insert(1, path)
+    os.chdir(path)
+    del path
+    if full:
+        train_df = pd.read_json("dataset/deep/combo_full_df_train.json")
+        validation_df = pd.read_json("dataset/deep/combo_full_df_val.json")
+    else:
+        train_df = pd.read_json("dataset/deep/combo_partial_df_train.json")
+        validation_df = pd.read_json("dataset/deep/combo_partial_df_val.json")
+    return train_df, validation_df
 
+
+def train_save(name, train, runner, folder, timestamp):
     import datetime
     print(f"Now training {name} model...")
-    (model, history, layers) = runner(train)
-    #ctypes.windll.user32.MessageBoxW(0, "Training done!", "TrainingProgress", 1)
-    #ans = input("Do you want to save this model? (y/any)")
-    #if ans == "y":
+    (model, history, layers, learning) = runner(train)
     composition = ""
     for elem in layers:
         composition += str(elem) + "|"
-    model.save_weights(f"{folder}/{name}_{datetime.datetime.now().timestamp()}/{name}_{datetime.datetime.now().timestamp()}")
+    # model.save_weights(f"{folder}/{name}_{timestamp}/{name}_{timestamp}_w.h5")
+    model.save(f"{folder}/{name}_{timestamp}/{name}_{timestamp}.h5")
     logfile = open(f'{folder}/log.csv', 'a+')
     try:
         f1_score = 2 * (history['precision'][-1] * history['recall'][-1]) / (
-                    history['precision'][-1] + history['recall'][-1])
+                history['precision'][-1] + history['recall'][-1])
         logfile.write(
-            f"\n{name}_{datetime.datetime.now().timestamp()};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};")
+            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};{learning['rate']}; {learning['epochs']}; {learning['batch_size']};")
     except Exception:
         f1_score = 2 * (history['precision_1'][-1] * history['recall_1'][-1]) / (
                 history['precision_1'][-1] + history['recall_1'][-1])
         logfile.write(
-            f"\n{name}_{datetime.datetime.now().timestamp()};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};")
+            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};{learning['rate']}; {learning['epochs']}; {learning['batch_size']};")
+    return model
+
+
+def load_model(folder, name):
+    print(f"Attempting to load {name} model...")
+    from tensorflow.keras.models import load_model
+    model = load_model(f"{folder}/{name}/{name}.h5")
+    print("Model loaded!")
     return model
