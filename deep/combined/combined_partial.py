@@ -1,4 +1,5 @@
 import pandas as pd
+from keras.optimizers import Adam
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
 from tensorflow.keras.metrics import Accuracy, Precision, Recall
@@ -12,7 +13,7 @@ def run_model(train):
     x = convert_to_tensor(train.iloc[:, :-1])
     y = convert_to_tensor(train.iloc[:, -1])
     input_layer = Input(shape=len(train.columns)-1, name="input")
-
+    learning = {"rate": 0.0005, "epochs": 100, 'batch_size': 1}
     layers = [LayerConfiguration(32), LayerConfiguration(32)]
     lr = input_layer
     i = 0
@@ -23,8 +24,10 @@ def run_model(train):
 
     model = Model(inputs=input_layer, outputs=output_layer)
 
-    model.compile(optimizer='adam', loss=tensorflow.losses.BinaryCrossentropy(), metrics=["accuracy",
-                                                                                          Precision(),
-                                                                                          Recall()])
-    data = model.fit(x=x, y=y, epochs=100, batch_size=64, verbose=True)
-    return model, data.history, layers
+    model.compile(optimizer=Adam(learning_rate=learning["rate"]), loss=tensorflow.losses.BinaryCrossentropy(),
+                  metrics=["accuracy",
+                           Precision(),
+                           Recall()])
+    data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
+                     batch_size=learning["batch_size"], verbose=True)
+    return model, data.history, layers, learning

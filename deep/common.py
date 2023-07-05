@@ -48,29 +48,31 @@ def get_dataset_combined(full=False):
 
 
 def train_save(name, train, runner, folder, timestamp):
-    import ctypes  # An included library with Python install.
-
     import datetime
     print(f"Now training {name} model...")
-    (model, history, layers) = runner(train)
-    #ctypes.windll.user32.MessageBoxW(0, "Training done!", "TrainingProgress", 1)
-    #ans = input("Do you want to save this model? (y/any)")
-    #if ans == "y":
+    (model, history, layers, learning) = runner(train)
     composition = ""
     for elem in layers:
         composition += str(elem) + "|"
-    model.save_weights(f"{folder}/{name}_{datetime.datetime.now().timestamp()}/{name}_{datetime.datetime.now().timestamp()}")
+    # model.save_weights(f"{folder}/{name}_{timestamp}/{name}_{timestamp}_w.h5")
+    model.save(f"{folder}/{name}_{timestamp}/{name}_{timestamp}.h5")
     logfile = open(f'{folder}/log.csv', 'a+')
     try:
         f1_score = 2 * (history['precision'][-1] * history['recall'][-1]) / (
-                    history['precision'][-1] + history['recall'][-1])
+                history['precision'][-1] + history['recall'][-1])
         logfile.write(
-            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};")
+            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision'][-1]}; {history['recall'][-1]}; {f1_score};{composition};{learning['rate']}; {learning['epochs']}; {learning['batch_size']};")
     except Exception:
         f1_score = 2 * (history['precision_1'][-1] * history['recall_1'][-1]) / (
                 history['precision_1'][-1] + history['recall_1'][-1])
         logfile.write(
-            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};")
+            f"\n{name}_{timestamp};{history['accuracy'][-1]};{history['loss'][-1]};{history['precision_1'][-1]}; {history['recall_1'][-1]}; {f1_score};{composition};{learning['rate']}; {learning['epochs']}; {learning['batch_size']};")
     return model
 
 
+def load_model(folder, name):
+    print(f"Attempting to load {name} model...")
+    from tensorflow.keras.models import load_model
+    model = load_model(f"{folder}/{name}/{name}.h5")
+    print("Model loaded!")
+    return model
