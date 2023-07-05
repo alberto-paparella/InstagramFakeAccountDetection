@@ -1,5 +1,6 @@
 from dataset.normalizer import json_importer_full, csv_importer_full
 from dataset.utils import find_demarcator
+from dataset.visualization.plotter import print_all_plots
 from utils.utils import experiment
 
 
@@ -38,6 +39,9 @@ def main():
 
     fake_IJECE = default_dataset[:idx]
     correct_IJECE = default_dataset[idx:]
+    print('Salvataggio delle rappresentazioni delle caratteristiche...')
+    print_all_plots(fake_spz, correct_spz, fake_IJECE, correct_IJECE)
+    print('Grafici disponibili.')
     results = {"spz": dict(), "IJECE": dict()}
     for exp in exp_list:
         print("\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'spz')...")
