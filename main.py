@@ -2,6 +2,7 @@ from dataset.normalizer import json_importer_full, csv_importer_full
 from dataset.utils import find_demarcator, get_combined_datasets
 from dataset.visualization.plotter import print_all_plots
 from utils.utils import experiment
+from deep.experiment import run_experiment as dl_experiment
 
 
 def main():
@@ -47,55 +48,39 @@ def main():
     print('Grafici disponibili.')
     results = {"InstaFake": dict(), "IJECE": dict(), "ComboPar": dict(), "ComboFull": dict()}
     for exp in exp_list:
-        if exp == "dl":
-            continue
         print(
             "\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'InstaFake')...")
-        res = experiment(fake_if, correct_if, csv=False, mode=exp, n_iter=n_iter)
+        if exp == "dl":
+            res = dl_experiment("./deep/InstaFake/checkpoint",
+                                ["INSTAFAKE_DEFAULT_1688545747.011179", "INSTAFAKE_CUSTOM_1688545747.011179"], "if")
+        else:
+            res = experiment(fake_if, correct_if, csv=False, mode=exp, n_iter=n_iter)
         results["InstaFake"][exp] = res
-        print("Running test on dataset 'IJECE' (internal name: 'IJECE')...")
-        res = experiment(fake_IJECE, correct_IJECE, csv=True, mode=exp, n_iter=n_iter)
+        print("\nRunning test on dataset 'IJECE' (internal name: 'IJECE')...")
+        if exp == "dl":
+            res = dl_experiment("./deep/IJECE/checkpoint",
+                                ["IJECE_DEFAULT_1688547539.761665", "IJECE_CUSTOM_1688547539.761665"], "ijece")
+        else:
+            res = experiment(fake_IJECE, correct_IJECE, csv=True, mode=exp, n_iter=n_iter)
         results["IJECE"][exp] = res
-        print("Running test on dataset 'Combo - Partial' (internal name: 'ComboPar')...")
-        res = experiment(combined_dataset["partial"]["fake"], combined_dataset["partial"]["correct"],
-                         csv=False, mode=exp, n_iter=n_iter, combine=True)
+        print("\nRunning test on dataset 'Combo - Partial' (internal name: 'ComboPar')...")
+        if exp == "dl":
+            res = dl_experiment("./deep/combined/checkpoint",
+                                ["", "COMBO_PART_1688548084.000676"], "combo-par")
+        else:
+            res = experiment(combined_dataset["partial"]["fake"], combined_dataset["partial"]["correct"],
+                             csv=False, mode=exp, n_iter=n_iter, combine=True)
         results["ComboPar"][exp] = res
-        print("Running test on dataset 'Combo - Full' (internal name: 'ComboFull')...")
-        res = experiment(combined_dataset["full"]["fake"], combined_dataset["full"]["correct"],
-                         csv=False, mode=exp, n_iter=n_iter, combine=True)
+        print("\nRunning test on dataset 'Combo - Full' (internal name: 'ComboFull')...")
+        if exp == "dl":
+            res = dl_experiment("./deep/combined/checkpoint",
+                                ["", "COMBO_FULL_1688548084.000676"], "combo-par")
+        else:
+            res = experiment(combined_dataset["full"]["fake"], combined_dataset["full"]["correct"],
+                             csv=False, mode=exp, n_iter=n_iter, combine=True)
         results["ComboFull"][exp] = res
-    if "dl" in exp_list:
-        pass
 
-    datasets = ["InstaFake", "IJECE"]
-    wins = {"custom": 0, "default": 0}
-    for exp in exp_list:
-        for combined_dataset in datasets:
-            if results[combined_dataset][exp]["default"]["precision"] < results[combined_dataset][exp]["custom"][
-                "precision"]:
-                print(f"Nell'esperimento {exp} su dataset {combined_dataset}, "
-                      f"l'approccio custom ha ottenuto una precision più alta.")
-                wins["custom"] += 1
-            else:
-                print(f"Nell'esperimento {exp} su dataset {combined_dataset}, "
-                      f"l'approccio custom ha ottenuto una precision più bassa.")
-                wins["default"] += 1
-            print(
-                f"(Differenza di "
-                f"{results[combined_dataset][exp]['default']['precision'] - results[combined_dataset][exp]['custom']['precision']} pts)")
-            if results[combined_dataset][exp]["default"]["accuracy"] < results[combined_dataset][exp]["custom"][
-                "accuracy"]:
-                print(f"Nell'esperimento {exp} su dataset {combined_dataset}, "
-                      f"l'approccio custom ha ottenuto una accuracy più alta.")
-                wins["custom"] += 1
-            else:
-                print(f"Nell'esperimento {exp} su dataset {combined_dataset}, "
-                      f"l'approccio custom ha ottenuto una accuracy più bassa.")
-                wins["default"] += 1
-            print(
-                f"(Differenza di "
-                f"{results[combined_dataset][exp]['default']['accuracy'] - results[combined_dataset][exp]['custom']['accuracy']} pts)")
-    print(f"L'approccio custom ha registrato {wins['custom']} vittorie, l'approccio default {wins['default']}")
+    datasets = ["InstaFake", "IJECE", "ComboPar", "ComboFull"]
     print(results)
 
 
