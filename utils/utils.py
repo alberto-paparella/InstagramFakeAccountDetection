@@ -4,8 +4,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from deep.IJECE.IJECE_custom import run_model as run_ijce_custom
 from deep.IJECE.IJECE_default import run_model as run_ijce_default
-from deep.spz.spz_default import run_model as run_spz_default
-from deep.spz.spz_custom import run_model as run_spz_custom
+from deep.InstaFake.instafake_default import run_model as run_if_default
+from deep.InstaFake.instafake_custom import run_model as run_if_custom
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 import numpy as np
@@ -115,15 +115,15 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
             custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
             default_train_df, default_validation_df = get_default_dataset(train_df, validation_df, csv)
         else:
-            spz_dataset_fake, spz_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
+            if_dataset_fake, if_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
                                                                            pd.DataFrame(data=correct[:demarcator]),
                                                                            False)
             ijece_dataset_fake, ijece_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[demarcator:]),
                                                                                pd.DataFrame(data=correct[demarcator:]),
                                                                                True)
             custom_train_df, custom_validation_df = shuffle_and_split(
-                pd.concat([spz_dataset_fake, ijece_dataset_fake]).to_dict('records'),
-                pd.concat([spz_dataset_correct, ijece_dataset_correct]).to_dict('records'))
+                pd.concat([if_dataset_fake, ijece_dataset_fake]).to_dict('records'),
+                pd.concat([if_dataset_correct, ijece_dataset_correct]).to_dict('records'))
         if not combine:
             # Default mode
             if mode == "dt":
@@ -151,7 +151,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                     # Go with IJCE
                     clf = run_ijce_default(default_train_df)
                 else:
-                    clf = run_spz_default(default_train_df)
+                    clf = run_if_default(default_train_df)
 
             # Get ground truth and predictions to measure performance
             X_val, y_val = default_validation_df.iloc[:, :-1], default_validation_df.iloc[:, -1]
@@ -214,7 +214,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                 # Go with IJCE
                 clf = run_ijce_custom(custom_train_df)
             else:
-                clf = run_spz_custom(custom_train_df)
+                clf = run_if_custom(custom_train_df)
 
         # Get ground truth and predictions to measure performance
         X_val, y_val = custom_validation_df.iloc[:, :-1], custom_validation_df.iloc[:, -1]

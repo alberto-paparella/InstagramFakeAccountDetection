@@ -1,5 +1,4 @@
-from dataset.normalizer import csv_importer_full, json_importer_full
-from dataset.utils import find_demarcator, shuffle_and_split, get_custom_dataset, get_default_dataset
+from dataset.utils import get_custom_dataset, get_default_dataset
 import os, sys
 import pandas as pd
 
@@ -24,11 +23,11 @@ def get_dataset_IJECE():
     return get_default_dataset(train_df, validation_df, True), get_custom_dataset(train_df, validation_df, True)
 
 
-def get_dataset_spz():
+def get_dataset_instafake():
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     os.chdir(path)
-    train_df = pd.read_json("dataset/deep/SPZ_df_train.json")
-    validation_df = pd.read_json("dataset/deep/SPZ_df_val.json")
+    train_df = pd.read_json("dataset/deep/instafake_df_train.json")
+    validation_df = pd.read_json("dataset/deep/instafake_df_val.json")
     return get_default_dataset(train_df, validation_df, False), get_custom_dataset(train_df, validation_df, False)
 
 

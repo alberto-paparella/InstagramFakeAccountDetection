@@ -31,8 +31,8 @@ def main():
             print("La stringa inserita non è valida.")
             return
     n_iter = int(input("Quante volte devono venire ripetuti gli esperimenti? "))
-    fake_spz = json_importer_full("./dataset/sources/automatedAccountData.json", True)
-    correct_spz = json_importer_full("./dataset/sources/nonautomatedAccountData.json", False)
+    fake_if = json_importer_full("./dataset/sources/automatedAccountData.json", True)
+    correct_if = json_importer_full("./dataset/sources/nonautomatedAccountData.json", False)
 
     default_dataset = csv_importer_full("./dataset/sources/user_fake_authentic_2class.csv")
     idx = find_demarcator(default_dataset)
@@ -40,17 +40,17 @@ def main():
     fake_IJECE = default_dataset[:idx]
     correct_IJECE = default_dataset[idx:]
     print('Salvataggio delle rappresentazioni delle caratteristiche...')
-    print_all_plots(fake_spz, correct_spz, fake_IJECE, correct_IJECE)
+    print_all_plots(fake_if, correct_if, fake_IJECE, correct_IJECE)
     print('Grafici disponibili.')
-    results = {"spz": dict(), "IJECE": dict()}
+    results = {"InstaFake": dict(), "IJECE": dict()}
     for exp in exp_list:
-        print("\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'spz')...")
-        res = experiment(fake_spz, correct_spz, csv=False, mode=exp, n_iter=n_iter)
-        results["spz"][exp] = res
+        print("\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'InstaFake')...")
+        res = experiment(fake_if, correct_if, csv=False, mode=exp, n_iter=n_iter)
+        results["InstaFake"][exp] = res
         print("Running test on dataset 'IJECE' (internal name: 'IJECE')...")
         res = experiment(fake_IJECE, correct_IJECE, csv=True, mode=exp, n_iter=n_iter)
         results["IJECE"][exp] = res
-    datasets = ["spz", "IJECE"]
+    datasets = ["InstaFake", "IJECE"]
     wins = {"custom": 0, "default": 0}
     for exp in exp_list:
         for dataset in datasets:

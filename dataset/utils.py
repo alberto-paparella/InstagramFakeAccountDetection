@@ -104,10 +104,10 @@ def get_default_dataset(train_df, validation_df, csv):
     if csv:
         return get_ijece_default_dataset(train_df, validation_df)
     else:
-        return get_spz_default_dataset(train_df, validation_df)
+        return get_instafake_default_dataset(train_df, validation_df)
 
 
-def get_spz_default_dataset(train_df, validation_df):
+def get_instafake_default_dataset(train_df, validation_df):
     """
     Da tenere: nmedia, follower, following, HasHighlightReels, Number of tags, average hashtag numbers, Average media likes,
     FFR, media or not
@@ -139,10 +139,10 @@ def get_deep_learning_dataset():
     ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
     ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
 
-    # SPZ dataset
-    spz_train, spz_val = shuffle_and_split(fake_json, correct_json)
-    spz_train.to_json(f'./dataset/deep/spz_df_train.json')
-    spz_val.to_json(f'./dataset/deep/spz_df_val.json')
+    # InstaFake dataset
+    if_train, if_val = shuffle_and_split(fake_json, correct_json)
+    if_train.to_json(f'./dataset/deep/instafake_df_train.json')
+    if_val.to_json(f'./dataset/deep/instafake_df_val.json')
 
     # Balanced joined dataset
     random.shuffle(fake_csv)
@@ -164,13 +164,13 @@ def get_deep_learning_dataset():
 
 
 def treat_combined(fake, correct, demarcator=700):
-    spz_dataset_fake, spz_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
+    if_dataset_fake, if_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
                                                                    pd.DataFrame(data=correct[:demarcator]),
                                                                    False)
     ijece_dataset_fake, ijece_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[demarcator:]),
                                                                        pd.DataFrame(data=correct[demarcator:]),
                                                                        True)
     custom_train_df, custom_validation_df = shuffle_and_split(
-        pd.concat([spz_dataset_fake, ijece_dataset_fake]).to_dict('records'),
-        pd.concat([spz_dataset_correct, ijece_dataset_correct]).to_dict('records'))
+        pd.concat([if_dataset_fake, ijece_dataset_fake]).to_dict('records'),
+        pd.concat([if_dataset_correct, ijece_dataset_correct]).to_dict('records'))
     return custom_train_df, custom_validation_df

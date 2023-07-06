@@ -1,18 +1,17 @@
 import pandas as pd
-import tensorflow.python.keras.losses
+from keras.optimizers import Adam
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
-from deep.common import get_dataset_spz, LayerConfiguration
-from tensorflow import convert_to_tensor
+from deep.common import get_dataset_instafake, LayerConfiguration
+import tensorflow
 from tensorflow.keras.metrics import Accuracy, Precision, Recall
 
 
 def run_model(train):
     train: pd.DataFrame
     input_layer = Input(shape=len(train.columns) - 1, name="input")
-    learning = {"rate": 0.001, "epochs": 100, 'batch_size': 64}
-    layers = [LayerConfiguration(32), LayerConfiguration(32)]
+    learning = {"rate": 0.001, "epochs": 100, 'batch_size': 16}
+    layers = [LayerConfiguration(16), LayerConfiguration(16)]
     lr = input_layer
     i = 0
     for layer in layers:

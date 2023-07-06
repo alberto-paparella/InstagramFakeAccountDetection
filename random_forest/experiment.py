@@ -14,7 +14,7 @@ def my_get_scores(csv, combine=False):
         'custom': {'accuracy': 0, 'precision': 0, 'recall': 0, 'f1': 0}
     }
     fake, correct = get_fake_correct_default(csv)
-    on = 'IJECE' if csv else 'spz'
+    on = 'IJECE' if csv else 'InstaFake'
     c_mode = 'activated' if combine else 'not activated'
     print(
         f"\nCalculating precision, accuracy, recall and f1 score {LOOPS} times on {on} and with combined mode {c_mode} "
@@ -44,14 +44,14 @@ def my_get_scores(csv, combine=False):
 
         else:
             demarcator = 700
-            spz_dataset_fake, spz_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[:demarcator]),
+            if_dataset_fake, if_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[:demarcator]),
                                                                        pd.DataFrame(data=correct[:demarcator]), False)
             ijece_dataset_fake, ijece_dataset_correct = get_custom_dataset(pd.DataFrame(data=fake[demarcator:]),
                                                                            pd.DataFrame(data=correct[demarcator:]),
                                                                            True)
             custom_train_df, custom_validation_df = shuffle_and_split(
-                pd.concat([spz_dataset_fake, ijece_dataset_fake]).to_dict('records'),
-                pd.concat([spz_dataset_correct, ijece_dataset_correct]).to_dict('records'))
+                pd.concat([if_dataset_fake, ijece_dataset_fake]).to_dict('records'),
+                pd.concat([if_dataset_correct, ijece_dataset_correct]).to_dict('records'))
 
         clf = RandomForestClassifier(max_depth=2, random_state=0)
         clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])

@@ -5,8 +5,8 @@ import random
 
 n_exp = 5
 
-fake_spz = json_importer_full("../dataset/sources/automatedAccountData.json", True)
-correct_spz = json_importer_full("../dataset/sources/nonautomatedAccountData.json", False)
+fake_if = json_importer_full("../dataset/sources/automatedAccountData.json", True)
+correct_if = json_importer_full("../dataset/sources/nonautomatedAccountData.json", False)
 
 ijece = csv_importer_full("../dataset/sources/user_fake_authentic_2class.csv")
 idx = find_demarcator(ijece)
@@ -15,14 +15,14 @@ experiments = ["dt", "lr", "nb", "rf", "dl"]
 
 dataset = {"full": dict(), "partial": dict()}
 
-dataset["full"]["fake"] = fake_spz + ijece[:idx]
-dataset["full"]["correct"] = correct_spz + ijece[idx:]
+dataset["full"]["fake"] = fake_if + ijece[:idx]
+dataset["full"]["correct"] = correct_if + ijece[idx:]
 ijece_fake = ijece[:idx]
 random.shuffle(ijece_fake)
 ijece_correct = ijece[idx:]
 random.shuffle(ijece_correct)
-dataset["partial"]["fake"] = fake_spz + ijece_fake[:700]
-dataset["partial"]["correct"] = correct_spz + ijece_correct[:700]
+dataset["partial"]["fake"] = fake_if + ijece_fake[:700]
+dataset["partial"]["correct"] = correct_if + ijece_correct[:700]
 
 print("\n================\n Running experiment on limited dataset... \n================\n")
 
