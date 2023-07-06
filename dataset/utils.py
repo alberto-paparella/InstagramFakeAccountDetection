@@ -63,6 +63,23 @@ def get_default_dataset_csv():
     return shuffle_and_split(fake, correct)
 
 
+def get_combined_datasets():
+    fake_if = json_importer_full("./dataset/sources/automatedAccountData.json", True, False)
+    correct_if = json_importer_full("./dataset/sources/nonautomatedAccountData.json", False, False)
+    ijece = csv_importer_full("./dataset/sources/user_fake_authentic_2class.csv", False)
+    idx = find_demarcator(ijece)
+    dataset = {"full": dict(), "partial": dict()}
+    dataset["full"]["fake"] = fake_if + ijece[:idx]
+    dataset["full"]["correct"] = correct_if + ijece[idx:]
+    ijece_fake = ijece[:idx]
+    random.shuffle(ijece_fake)
+    ijece_correct = ijece[idx:]
+    random.shuffle(ijece_correct)
+    dataset["partial"]["fake"] = fake_if + ijece_fake[:700]
+    dataset["partial"]["correct"] = correct_if + ijece_correct[:700]
+    return dataset
+
+
 def get_compatible_dataset(train_df, validation_df, csv):
     if csv:
         custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "pr", "fo", "cs"], axis=1)

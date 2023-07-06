@@ -39,14 +39,16 @@ def csv_importer(filename: str) -> list:
     return result
 
 
-def csv_importer_full(filename):
+def csv_importer_full(filename, verbose=True):
     result = []
-    print(f"Now loading from file {filename}...")
+    if verbose:
+        print(f"Now loading from file {filename}...")
     with open(filename, 'r') as csv_source:
         reader = csv.reader(csv_source)
         counter = 0
         for row in reader:
-            print(f"{counter}        ", end="\r")
+            if verbose:
+                print(f"{counter}        ", end="\r")
             if counter == 0:
                 counter += 1
                 continue
@@ -125,9 +127,10 @@ def json_importer(filename: str, fake=False) -> list:
     return result
 
 
-def json_importer_full(filename: str, fake=False) -> list:
+def json_importer_full(filename: str, fake=False, verbose=True) -> list:
     result = []
-    print(f"Now loading from file {filename}...")
+    if verbose:
+        print(f"Now loading from file {filename}...")
     with open(filename, "r") as json_source:
         data = json.load(json_source)
         size = len(data)
@@ -163,7 +166,8 @@ def json_importer_full(filename: str, fake=False) -> list:
                  "usernameLength": row["usernameLength"],
                  "usernameDigitCount": row["usernameDigitCount"],
                  "fake": (1 if fake else 0)})
-        print(f"Loaded {counter} entries from source {filename}")
+        if verbose:
+            print(f"Loaded {counter} entries from source {filename}")
     return result
 
 
