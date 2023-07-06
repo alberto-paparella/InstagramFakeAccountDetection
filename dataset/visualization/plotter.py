@@ -1,10 +1,6 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
-
-
-# nmedia, nfollower, nfollowing, biol, url, erl, erc, avgtime
-# nmedia, nfollower, nfollowing, biol, url, mediaLikeNumbers, ???, avgtime
-
 
 def my_plot(fake, correct, title, ylabel, feature, name, xlabel='ID account', zeros=True):
     plt.cla()
@@ -35,6 +31,11 @@ def my_plot(fake, correct, title, ylabel, feature, name, xlabel='ID account', ze
 
 
 def print_all_plots(fake_if, correct_if, fake_IJECE, correct_IJECE):
+    try:
+        os.makedirs('./dataset/visualization/plots')
+    except FileExistsError:
+        pass
+
     my_plot(fake_if, correct_if, 'Numero di media per account', 'N media', 'nmedia', 'InstaFake')
     my_plot(fake_if, correct_if, 'Numero di follower per account', 'N follower', 'nfollower', 'InstaFake')
     my_plot(fake_if, correct_if, 'Numero di following per account', 'N following', 'nfollowing', 'InstaFake')
