@@ -13,8 +13,8 @@ def run_model(train):
     x = convert_to_tensor(train.iloc[:, :-1])
     y = convert_to_tensor(train.iloc[:, -1])
     input_layer = Input(shape=len(train.columns) - 1, name="input")
-    learning = {"rate": 0.001, "epochs": 100, 'batch_size': 128}
-    layers = [LayerConfiguration(64), LayerConfiguration(64)]
+    learning = {"rate": 0.001, "epochs": 100, 'batch_size': 32}
+    layers = [LayerConfiguration(32), LayerConfiguration(32)]
     lr = input_layer
     i = 0
     for layer in layers:
@@ -27,6 +27,6 @@ def run_model(train):
                   metrics=["accuracy",
                            Precision(),
                            Recall()])
-    data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
+    data = model.fit(x=x, y=y, epochs=learning["epochs"],
                      batch_size=learning["batch_size"], verbose=True)
     return model, data.history, layers, learning

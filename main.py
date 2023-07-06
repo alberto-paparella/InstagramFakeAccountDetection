@@ -66,7 +66,7 @@ def main():
         print("\nRunning test on dataset 'Combo - Partial' (internal name: 'ComboPar')...")
         if exp == "dl":
             res = dl_experiment("./deep/combined/checkpoint",
-                                ["", "COMBO_PART_1688548084.000676"], "combo-par")
+                                ["", "COMBO_PART_1688655459.089436"], "combo-par")
         else:
             res = experiment(combined_dataset["partial"]["fake"], combined_dataset["partial"]["correct"],
                              csv=False, mode=exp, n_iter=n_iter, combine=True)
@@ -74,7 +74,7 @@ def main():
         print("\nRunning test on dataset 'Combo - Full' (internal name: 'ComboFull')...")
         if exp == "dl":
             res = dl_experiment("./deep/combined/checkpoint",
-                                ["", "COMBO_FULL_1688548084.000676"], "combo-par")
+                                ["", "COMBO_FULL_1688655459.089436"], "combo-par")
         else:
             res = experiment(combined_dataset["full"]["fake"], combined_dataset["full"]["correct"],
                              csv=False, mode=exp, n_iter=n_iter, combine=True)

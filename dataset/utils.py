@@ -153,13 +153,13 @@ def get_deep_learning_dataset():
 
     # IJCE dataset
     ijece_train, ijece_val = shuffle_and_split(fake_csv, correct_csv)
-    ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
-    ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
+    # ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
+    # ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
 
     # InstaFake dataset
     if_train, if_val = shuffle_and_split(fake_json, correct_json)
-    if_train.to_json(f'./dataset/deep/instafake_df_train.json')
-    if_val.to_json(f'./dataset/deep/instafake_df_val.json')
+    # if_train.to_json(f'./dataset/deep/instafake_df_train.json')
+    # if_val.to_json(f'./dataset/deep/instafake_df_val.json')
 
     # Balanced joined dataset
     random.shuffle(fake_csv)
@@ -169,12 +169,12 @@ def get_deep_learning_dataset():
     partial_fake = fake_json + ijece_fake_part
     partial_correct = correct_json + ijece_correct_part
     partial_train, partial_validation = treat_combined(partial_fake, partial_correct)
-    partial_train.to_json(f'./dataset/deep/combo_partial_df_train.json')
-    partial_validation.to_json(f'./dataset/deep/combo_partial_df_val.json')
+    # partial_train.to_json(f'./dataset/deep/combo_partial_df_train.json')
+    # partial_validation.to_json(f'./dataset/deep/combo_partial_df_val.json')
 
     # Unbalanced joined dataset
     combined_fake = fake_json + fake_csv
-    combined_correct = fake_json + fake_csv
+    combined_correct = correct_json + correct_csv
     combined_train, combined_validation = treat_combined(combined_fake, combined_correct)
     combined_train.to_json(f'./dataset/deep/combo_full_df_train.json')
     combined_validation.to_json(f'./dataset/deep/combo_full_df_val.json')

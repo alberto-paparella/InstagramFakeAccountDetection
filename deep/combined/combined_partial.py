@@ -28,6 +28,6 @@ def run_model(train):
                   metrics=["accuracy",
                            Precision(),
                            Recall()])
-    data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
+    data = model.fit(x=x, y=y, epochs=learning["epochs"],
                      batch_size=learning["batch_size"], verbose=True)
     return model, data.history, layers, learning
