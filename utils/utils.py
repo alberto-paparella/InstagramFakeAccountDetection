@@ -78,7 +78,7 @@ def f1_score(precision, recall):
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700):
+def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700, compatibility=False):
     '''
     A function which execution an experiment fitting a model `n_iter` times and giving
     back the `avg_scores` for various metrics such as `accuracy`, `precision`, `recall`, ...
@@ -112,8 +112,11 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
         # Get new train_df and validation_df, same for default and custom
         if not combine:
             train_df, validation_df = shuffle_and_split(fake, correct)
-            custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
-            default_train_df, default_validation_df = get_default_dataset(train_df, validation_df, csv)
+            if compatibility:
+                custom_train_df, custom_validation_df = get_compatible_dataset(train_df, validation_df, csv)
+            else:
+                custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
+                default_train_df, default_validation_df = get_default_dataset(train_df, validation_df, csv)
         else:
             if_dataset_fake, if_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
                                                                            pd.DataFrame(data=correct[:demarcator]),
@@ -124,7 +127,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
             custom_train_df, custom_validation_df = shuffle_and_split(
                 pd.concat([if_dataset_fake, ijece_dataset_fake]).to_dict('records'),
                 pd.concat([if_dataset_correct, ijece_dataset_correct]).to_dict('records'))
-        if not combine:
+        if not combine and not compatibility:
             # Default mode
             if mode == "dt":
                 # Get new Decision Tree
@@ -156,7 +159,6 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
             # Get ground truth and predictions to measure performance
             X_val, y_val = default_validation_df.iloc[:, :-1], default_validation_df.iloc[:, -1]
             if mode == "dl":
-                # TODO: Fix the precision counting
                 '''
                 precision = 0
                 accuracy = 0
@@ -219,7 +221,6 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
         # Get ground truth and predictions to measure performance
         X_val, y_val = custom_validation_df.iloc[:, :-1], custom_validation_df.iloc[:, -1]
         if mode == "dl":
-            # TODO Fix the precision counting!
             '''
             precision = 0
             accuracy = 0

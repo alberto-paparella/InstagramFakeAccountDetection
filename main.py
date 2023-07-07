@@ -46,27 +46,45 @@ def main():
     print('Salvataggio delle rappresentazioni delle caratteristiche...')
     print_all_plots(fake_if, correct_if, fake_IJECE, correct_IJECE)
     print('Grafici disponibili.')
-    results = {"InstaFake": dict(), "IJECE": dict(), "ComboPar": dict(), "ComboFull": dict()}
+    results = {"InstaFake": dict(), "IJECE": dict(), "CompInstaFake": dict(), "CompIJECE": dict(), "ComboPar": dict(),
+               "ComboFull": dict()}
     for exp in exp_list:
         print(
             "\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'InstaFake')...")
         if exp == "dl":
             res = dl_experiment("./deep/InstaFake/checkpoint",
-                                ["INSTAFAKE_DEFAULT_1688545747.011179", "INSTAFAKE_CUSTOM_1688545747.011179"], "if")
+                                ["INSTAFAKE_DEFAULT_1688545747.011179", "INSTAFAKE_CUSTOM_1688545747.011179"], "if", n_iter)
         else:
             res = experiment(fake_if, correct_if, csv=False, mode=exp, n_iter=n_iter)
         results["InstaFake"][exp] = res
         print("\nRunning test on dataset 'IJECE' (internal name: 'IJECE')...")
         if exp == "dl":
             res = dl_experiment("./deep/IJECE/checkpoint",
-                                ["IJECE_DEFAULT_1688547539.761665", "IJECE_CUSTOM_1688547539.761665"], "ijece")
+                                ["IJECE_DEFAULT_1688547539.761665", "IJECE_CUSTOM_1688547539.761665"], "ijece", n_iter)
         else:
             res = experiment(fake_IJECE, correct_IJECE, csv=True, mode=exp, n_iter=n_iter)
         results["IJECE"][exp] = res
+
+        print("\nRunning test on dataset 'Compatibile - InstaFake' (internal name: 'CompInstaFake')...")
+        if exp == "dl":
+            res = dl_experiment("./deep/compatible/checkpoint",
+                                ["", "COMP_INSTAFAKE_1688719989.178667"], "comp-if", n_iter)
+        else:
+            res = experiment(fake_if, correct_if, csv=False, mode=exp, n_iter=n_iter, compatibility=True)
+        results["CompInstaFake"][exp] = res
+
+        print("\nRunning test on dataset 'Compatibile - IJECE' (internal name: 'CompIJECE')...")
+        if exp == "dl":
+            res = dl_experiment("./deep/compatible/checkpoint",
+                                ["", "COMP_IJECE_1688719989.178667"], "comp-ijece", n_iter)
+        else:
+            res = experiment(fake_IJECE, correct_IJECE, csv=True, mode=exp, n_iter=n_iter, compatibility=True)
+        results["CompIJECE"][exp] = res
+
         print("\nRunning test on dataset 'Combo - Partial' (internal name: 'ComboPar')...")
         if exp == "dl":
             res = dl_experiment("./deep/combined/checkpoint",
-                                ["", "COMBO_PART_1688655459.089436"], "combo-par")
+                                ["", "COMBO_PART_1688655459.089436"], "combo-par", n_iter)
         else:
             res = experiment(combined_dataset["partial"]["fake"], combined_dataset["partial"]["correct"],
                              csv=False, mode=exp, n_iter=n_iter, combine=True)
@@ -74,13 +92,13 @@ def main():
         print("\nRunning test on dataset 'Combo - Full' (internal name: 'ComboFull')...")
         if exp == "dl":
             res = dl_experiment("./deep/combined/checkpoint",
-                                ["", "COMBO_FULL_1688655459.089436"], "combo-par")
+                                ["", "COMBO_FULL_1688655459.089436"], "combo-par", n_iter)
         else:
             res = experiment(combined_dataset["full"]["fake"], combined_dataset["full"]["correct"],
                              csv=False, mode=exp, n_iter=n_iter, combine=True)
         results["ComboFull"][exp] = res
 
-    datasets = ["InstaFake", "IJECE", "ComboPar", "ComboFull"]
+    datasets = ["InstaFake", "IJECE", "CompInstaFake", "CompIJECE", "ComboPar", "ComboFull"]
     print(results)
 
 

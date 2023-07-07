@@ -46,6 +46,23 @@ def get_dataset_combined(full=False):
     return train_df, validation_df
 
 
+def get_compatible_dataset(mode="if"):
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if not path in sys.path:
+        sys.path.insert(1, path)
+    os.chdir(path)
+    del path
+    if mode == "if":
+        train_df = pd.read_json("dataset/deep/comp_instafake_df_train.json")
+        validation_df = pd.read_json("dataset/deep/comp_instafake_df_val.json")
+    elif mode == "ijece":
+        train_df = pd.read_json("dataset/deep/comp_ijece_df_train.json")
+        validation_df = pd.read_json("dataset/deep/comp_ijece_df_val.json")
+    else:
+        return None, None
+    return train_df, validation_df
+
+
 def train_save(name, train, runner, folder, timestamp):
     import datetime
     print(f"Now training {name} model...")

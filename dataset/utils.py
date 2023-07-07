@@ -104,6 +104,9 @@ def get_ijece_custom_dataset(train_df, validation_df):
     return custom_train_df, custom_validation_df
 
 
+#TODO: attributi in comune sui singoli dataset e guarda quali funzionano meglio tra IF_Cus, IJECE_Cus, IF_comp e IJECE_comp
+
+
 def get_custom_dataset(train_df, validation_df, csv):
     if csv:
         return get_ijece_custom_dataset(train_df, validation_df)
@@ -151,7 +154,7 @@ def get_deep_learning_dataset():
     fake_csv, correct_csv = get_fake_correct_default(True)
     fake_json, correct_json = get_fake_correct_default(False)
 
-    # IJCE dataset
+    # IJECE dataset
     ijece_train, ijece_val = shuffle_and_split(fake_csv, correct_csv)
     # ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
     # ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
@@ -160,6 +163,20 @@ def get_deep_learning_dataset():
     if_train, if_val = shuffle_and_split(fake_json, correct_json)
     # if_train.to_json(f'./dataset/deep/instafake_df_train.json')
     # if_val.to_json(f'./dataset/deep/instafake_df_val.json')
+
+    # Instafake compatible dataset
+    if_train_c = if_train
+    if_val_c = if_val
+    if_train_c, if_val_c = get_compatible_dataset(if_train_c, if_val_c, False)
+    if_train_c.to_json('./dataset/deep/comp_instafake_df_train.json')
+    if_val_c.to_json('./dataset/deep/comp_instafake_df_val.json')
+
+    # IJECE compatible dataset
+    ijece_train_c = ijece_train
+    ijece_val_c = ijece_val
+    ijece_train_c, ijece_val_c = get_compatible_dataset(ijece_train_c, ijece_val_c, True)
+    ijece_train_c.to_json('./dataset/deep/comp_ijece_df_train.json')
+    ijece_train_c.to_json('./dataset/deep/comp_ijece_df_val.json')
 
     # Balanced joined dataset
     random.shuffle(fake_csv)
@@ -176,8 +193,8 @@ def get_deep_learning_dataset():
     combined_fake = fake_json + fake_csv
     combined_correct = correct_json + correct_csv
     combined_train, combined_validation = treat_combined(combined_fake, combined_correct)
-    combined_train.to_json(f'./dataset/deep/combo_full_df_train.json')
-    combined_validation.to_json(f'./dataset/deep/combo_full_df_val.json')
+    # combined_train.to_json(f'./dataset/deep/combo_full_df_train.json')
+    # combined_validation.to_json(f'./dataset/deep/combo_full_df_val.json')
 
 
 def treat_combined(fake, correct, demarcator=700):

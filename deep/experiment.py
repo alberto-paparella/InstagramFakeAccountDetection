@@ -1,4 +1,4 @@
-from deep.common import load_model, get_dataset_instafake, get_dataset_IJECE, get_dataset_combined
+from deep.common import load_model, get_dataset_instafake, get_dataset_IJECE, get_dataset_combined, get_compatible_dataset
 
 
 def run_experiment(folder, names, mode, n_iter=10):
@@ -12,10 +12,16 @@ def run_experiment(folder, names, mode, n_iter=10):
     elif mode == "combo-full":
         (custom_train, custom_validation) = get_dataset_combined(True)
         default_validation = default_validation = None
+    elif mode == "comp-if":
+        (custom_train, custom_validation) = get_compatible_dataset("if")
+        default_validation = default_validation = None
+    elif mode == "comp-ijece":
+        (custom_train, custom_validation) = get_compatible_dataset("ijece")
+        default_validation = default_validation = None
     else:
         return
     default_model = None
-    if mode != "combo-full" and mode != "combo-par":
+    if mode != "combo-full" and mode != "combo-par" and mode != "comp-if" and mode != "comp-ijece":
         default_model = load_model(folder, names[0])
     custom_model = load_model(folder, names[1])
     items = [{"model": default_model, "validation": default_validation, "idx": 0},
