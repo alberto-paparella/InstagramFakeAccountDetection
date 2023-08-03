@@ -1,8 +1,10 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from numpy import arange
 
-def my_plot(fake, correct, title, ylabel, feature, name, xlabel='ID account', zeros=True):
+
+def data_plot(fake, correct, title, ylabel, feature, name, xlabel='ID account', zeros=True):
     plt.cla()
     plt.clf()
     plt.title(f"{title} - {name}")
@@ -36,16 +38,70 @@ def print_all_plots(fake_if, correct_if, fake_IJECE, correct_IJECE):
     except FileExistsError:
         pass
 
-    my_plot(fake_if, correct_if, 'Numero di media per account', 'N media', 'nmedia', 'InstaFake')
-    my_plot(fake_if, correct_if, 'Numero di follower per account', 'N follower', 'nfollower', 'InstaFake')
-    my_plot(fake_if, correct_if, 'Numero di following per account', 'N following', 'nfollowing', 'InstaFake')
-    my_plot(fake_if, correct_if, 'Lunghezza bio per account', 'Lunghezza bio', 'biol', 'InstaFake')
-    my_plot(fake_if, correct_if, 'Engagement rate - like per account', 'ERL', 'mediaLikeNumbers', 'InstaFake')
-    my_plot(fake_if, correct_if, 'Intervallo medio fra post per account', 'Tempo medio', 'avgtime', 'InstaFake')
+    data_plot(fake_if, correct_if, 'Numero di media per account', 'N media', 'nmedia', 'InstaFake')
+    data_plot(fake_if, correct_if, 'Numero di follower per account', 'N follower', 'nfollower', 'InstaFake')
+    data_plot(fake_if, correct_if, 'Numero di following per account', 'N following', 'nfollowing', 'InstaFake')
+    data_plot(fake_if, correct_if, 'Lunghezza bio per account', 'Lunghezza bio', 'biol', 'InstaFake')
+    data_plot(fake_if, correct_if, 'Engagement rate - like per account', 'ERL', 'mediaLikeNumbers', 'InstaFake')
+    data_plot(fake_if, correct_if, 'Intervallo medio fra post per account', 'Tempo medio', 'avgtime', 'InstaFake')
 
-    my_plot(fake_IJECE, correct_IJECE, 'Numero di media per account', 'N media', 'nmedia', 'IJECE')
-    my_plot(fake_IJECE, correct_IJECE, 'Numero di follower per account', 'N follower', 'nfollower', 'IJECE')
-    my_plot(fake_IJECE, correct_IJECE, 'Numero di following per account', 'N following', 'nfollowing', 'IJECE')
-    my_plot(fake_IJECE, correct_IJECE, 'Lunghezza bio per account', 'Lunghezza bio', 'biol', 'IJECE')
-    my_plot(fake_IJECE, correct_IJECE, 'Engagement rate - like per account', 'ERL', 'erl', 'IJECE')
-    my_plot(fake_IJECE, correct_IJECE, 'Intervallo medio fra post per account', 'Tempo medio', 'avgtime', 'IJECE')
+    data_plot(fake_IJECE, correct_IJECE, 'Numero di media per account', 'N media', 'nmedia', 'IJECE')
+    data_plot(fake_IJECE, correct_IJECE, 'Numero di follower per account', 'N follower', 'nfollower', 'IJECE')
+    data_plot(fake_IJECE, correct_IJECE, 'Numero di following per account', 'N following', 'nfollowing', 'IJECE')
+    data_plot(fake_IJECE, correct_IJECE, 'Lunghezza bio per account', 'Lunghezza bio', 'biol', 'IJECE')
+    data_plot(fake_IJECE, correct_IJECE, 'Engagement rate - like per account', 'ERL', 'erl', 'IJECE')
+    data_plot(fake_IJECE, correct_IJECE, 'Intervallo medio fra post per account', 'Tempo medio', 'avgtime', 'IJECE')
+
+
+def result_plot(results, exp_list, n_iter):
+    try:
+        os.makedirs('./dataset/visualization/plots_results')
+    except FileExistsError:
+        pass
+
+    methods = {'dt': 'Decision Tree', 'rf': 'Random Forest', 'lr': 'Logistic Regression',
+               'nb': 'Naive Bayes'}  # , 'dl': 'Deep Learning'}
+
+    for method in methods.keys():
+        if method not in exp_list:
+            continue
+        plt.cla()
+        plt.clf()
+        dataset_labels = [
+            'IF', 'IJ', 'IF_D', 'IJ_D', 'IF_C', 'IJ_C', 'COMB_P', 'COMB_F']  # , 'COMB_IF', 'COMB_IJ']
+        metrics_labels = ['accuracy', 'precision', 'recall', 'f1']
+        scores = dict()
+        for m in metrics_labels:
+            scores[m] = [
+                results['IFPaper'][method]['default'][m],
+                results['IJECEPaper'][method]['default'][m],
+                results['InstaFake'][method]['default'][m],
+                results['IJECE'][method]['default'][m],
+                results['InstaFake'][method]['custom'][m],
+                results['IJECE'][method]['custom'][m],
+                # results['CompInstaFake'][method]['custom'][m],
+                # results['CompIJECE'][method]['custom'][m],
+                results['ComboPar'][method]['custom'][m],
+                results['ComboFull'][method]['custom'][m]
+            ]
+        x = arange(len(dataset_labels))
+
+        width = 0.10  # the width of the bars
+        multiplier = 0
+
+        fig, ax = plt.subplots(layout='constrained')
+
+        for metric, score in scores.items():
+            offset = width * multiplier
+            ax.bar(x + offset, score, width, label=metric)
+            # ax.bar_label(rects, padding=3)
+            multiplier += 1
+
+        ax.set_ylabel('Score')
+        ax.set_title(f'Scores for every dataset with {methods[method]} in {n_iter} iterations')
+        ax.set_xticks(x + width, dataset_labels)
+        ax.legend(loc='best', ncols=4)
+        ax.set_ylim(0.6, 1)
+
+        fig.tight_layout()
+        plt.savefig(f'./dataset/visualization/plots_results/{methods[method]}_{n_iter} iter.png')
