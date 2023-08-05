@@ -11,7 +11,7 @@ def run_model(train):
     train: pd.DataFrame
     input_layer = Input(shape=len(train.columns) - 1, name="input")
     learning = {"rate": 0.001, "epochs": 100, 'batch_size': 16}
-    layers = [LayerConfiguration(16), LayerConfiguration(16)]
+    layers = [LayerConfiguration(32), LayerConfiguration(32)]
     lr = input_layer
     i = 0
     for layer in layers:
