@@ -5,6 +5,7 @@ from tensorflow.keras.models import Model
 from deep.common import get_dataset_instafake, LayerConfiguration
 import tensorflow
 from tensorflow.keras.metrics import Accuracy, Precision, Recall
+from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 
 def run_model(train):
@@ -18,12 +19,12 @@ def run_model(train):
         lr = Dense(layer.size, layer.activation_function, name=f"denselayer{i}")(lr)
         i += 1
     output_layer = Dense(1, activation="sigmoid", name="Output")(lr)
-
+    reduce_lr = ReduceLROnPlateau(factor=0.5, patience=4, min_lr=0, monitor="loss")
     model = Model(inputs=input_layer, outputs=output_layer)
     model.compile(optimizer=Adam(learning_rate=learning["rate"]), loss=tensorflow.losses.BinaryCrossentropy(),
                   metrics=["accuracy",
                            Precision(),
                            Recall()])
     data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
-                     batch_size=learning["batch_size"], verbose=True)
+                     batch_size=learning["batch_size"], verbose=True, callbacks=[reduce_lr])
     return model, data.history, layers, learning

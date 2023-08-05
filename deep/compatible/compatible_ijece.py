@@ -6,6 +6,7 @@ from tensorflow.keras.metrics import Accuracy, Precision, Recall
 from deep.common import LayerConfiguration
 import tensorflow
 from tensorflow import convert_to_tensor
+from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 def run_model(train):
 
@@ -21,7 +22,7 @@ def run_model(train):
         lr = Dense(layer.size, layer.activation_function, name=f"denselayer{i}")(lr)
         i += 1
     output_layer = Dense(1, activation="sigmoid", name="Output")(lr)
-
+    reduce_lr = ReduceLROnPlateau(factor=0.5, patience=4, min_lr=0, monitor="loss")
     model = Model(inputs=input_layer, outputs=output_layer)
 
     model.compile(optimizer=Adam(learning_rate=learning["rate"]), loss=tensorflow.losses.BinaryCrossentropy(),
@@ -29,5 +30,5 @@ def run_model(train):
                            Precision(),
                            Recall()])
     data = model.fit(x=x, y=y, epochs=learning["epochs"],
-                     batch_size=learning["batch_size"], verbose=True)
+                     batch_size=learning["batch_size"], verbose=True, callbacks=[reduce_lr])
     return model, data.history, layers, learning

@@ -6,6 +6,7 @@ from tensorflow.keras.optimizers import Adam
 from deep.common import get_dataset_instafake, LayerConfiguration
 from tensorflow import convert_to_tensor
 from tensorflow.keras.metrics import Accuracy, Precision, Recall
+from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 
 def run_model(train):
@@ -25,6 +26,7 @@ def run_model(train):
                   metrics=["accuracy",
                            Precision(),
                            Recall()])
+    reduce_lr = ReduceLROnPlateau(factor=0.5, patience=4, min_lr=0, monitor="loss")
     data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
-                     batch_size=learning["batch_size"], verbose=True)
+                     batch_size=learning["batch_size"], verbose=True, callbacks=[reduce_lr])
     return model, data.history, layers, learning
