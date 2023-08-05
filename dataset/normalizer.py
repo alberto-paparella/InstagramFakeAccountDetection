@@ -86,15 +86,6 @@ def compute_erl(num_likes, num_media, num_followers) -> float:
     return result
 
 
-def compute_ahc(ht_numbers, media_count) -> float:
-    result = 0
-    try:
-        sum(ht_numbers) / media_count
-    except ZeroDivisionError:
-        return 0
-    return result
-
-
 def compute_avg_time(times) -> float:
     length = len(times)
     if not length:

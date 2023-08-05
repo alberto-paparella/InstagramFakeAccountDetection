@@ -1,4 +1,5 @@
-from dataset.utils import get_custom_dataset, shuffle_and_split, get_default_dataset, get_compatible_dataset
+from dataset.utils import get_custom_dataset, shuffle_and_split, get_default_dataset, get_compatible_dataset, \
+    treat_combined
 from sklearn import tree, metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -9,7 +10,6 @@ from deep.InstaFake.instafake_custom import run_model as run_if_custom
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 import numpy as np
-import pandas as pd
 
 PERCENT_TRAIN = 70
 MAX_ITER = 5000  # Maximum number of iterations for Logistic Regressors
@@ -25,14 +25,6 @@ def fit_decision_tree(X, y, validation_df):
     return y_val, y_pred
 
 
-def print_classification_report(X, y, validation_df):
-    y_val, y_pred = fit_decision_tree(X, y, validation_df)
-    # y_compare = y_pred - y_val
-    # print('accuracy =', 100 - (sum(abs(y_compare)) / len(validation_df.index)) * 100)
-    print(metrics.classification_report(y_val, y_pred))
-    print(type(metrics.classification_report(y_val, y_pred)))
-
-
 def get_scores(y_val, y_pred):
     scores = {
         'accuracy': 0,
@@ -45,12 +37,6 @@ def get_scores(y_val, y_pred):
     scores['recall'] += metrics.recall_score(y_val, y_pred)
     scores['f1'] += metrics.f1_score(y_val, y_pred)
     return scores
-
-
-def print_scores(train_df, validation_df):
-    scores = get_scores(train_df, validation_df)
-    print('precision:', "{:.3f}".format(scores['precision']))
-    print('accuracy:', "{:.3f}".format(scores['accuracy']))
 
 
 '''
@@ -118,15 +104,7 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                 custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
                 default_train_df, default_validation_df = get_default_dataset(train_df, validation_df, csv)
         else:
-            if_dataset_fake, if_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
-                                                                           pd.DataFrame(data=correct[:demarcator]),
-                                                                           False)
-            ijece_dataset_fake, ijece_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[demarcator:]),
-                                                                               pd.DataFrame(data=correct[demarcator:]),
-                                                                               True)
-            custom_train_df, custom_validation_df = shuffle_and_split(
-                pd.concat([if_dataset_fake, ijece_dataset_fake]).to_dict('records'),
-                pd.concat([if_dataset_correct, ijece_dataset_correct]).to_dict('records'))
+            custom_train_df, custom_validation_df = treat_combined(fake, correct, demarcator)
         if not combine and not compatibility:
             # Default mode
             if mode == "dt":

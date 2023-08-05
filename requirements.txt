@@ -17,3 +17,5 @@ six~=1.16.0
 docutils~=0.19
 tensorflow~=2.12.0
 matplotlib
+keras~=2.12.0
+numpy

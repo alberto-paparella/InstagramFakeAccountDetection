@@ -1,17 +1,8 @@
 from dataset.normalizer import csv_importer_full, json_importer_full
 import random
 import pandas as pd
-import os
-import sys
 
 PERCENT_TRAIN = 70
-
-
-def set_path():
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    if path not in sys.path:
-        sys.path.insert(1, path)
-    return path
 
 
 def shuffle_and_split(ds_fake, ds_correct):
@@ -58,11 +49,6 @@ def get_fake_correct_default(csv):
             "dataset/sources/nonautomatedAccountData.json", False)
 
 
-def get_default_dataset_csv():
-    fake, correct = get_fake_correct_default(True)
-    return shuffle_and_split(fake, correct)
-
-
 def get_combined_datasets():
     fake_if = json_importer_full("./dataset/sources/automatedAccountData.json", True, False)
     correct_if = json_importer_full("./dataset/sources/nonautomatedAccountData.json", False, False)
@@ -104,7 +90,8 @@ def get_ijece_custom_dataset(train_df, validation_df):
     return custom_train_df, custom_validation_df
 
 
-#TODO: attributi in comune sui singoli dataset e guarda quali funzionano meglio tra IF_Cus, IJECE_Cus, IF_comp e IJECE_comp
+# TODO: attributi in comune sui singoli dataset e guarda quali funzionano meglio tra IF_Cus, IJECE_Cus,
+# IF_comp e IJECE_comp
 
 
 def get_custom_dataset(train_df, validation_df, csv):
@@ -129,7 +116,8 @@ def get_default_dataset(train_df, validation_df, csv):
 
 def get_instafake_default_dataset(train_df, validation_df):
     """
-    Da tenere: nmedia, follower, following, HasHighlightReels, Number of tags, average hashtag numbers, Average media likes,
+    Da tenere: nmedia, follower, following, HasHighlightReels, Number of tags,
+    average hashtag numbers, Average media likes,
     FFR, media or not
     :param train_df:
     :param validation_df:
@@ -199,8 +187,8 @@ def get_deep_learning_dataset():
 
 def treat_combined(fake, correct, demarcator=700):
     if_dataset_fake, if_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[:demarcator]),
-                                                                   pd.DataFrame(data=correct[:demarcator]),
-                                                                   False)
+                                                                 pd.DataFrame(data=correct[:demarcator]),
+                                                                 False)
     ijece_dataset_fake, ijece_dataset_correct = get_compatible_dataset(pd.DataFrame(data=fake[demarcator:]),
                                                                        pd.DataFrame(data=correct[demarcator:]),
                                                                        True)

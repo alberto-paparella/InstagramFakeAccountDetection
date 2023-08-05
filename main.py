@@ -72,11 +72,11 @@ def main():
             },
         "IFPaper":
             {
-                'dt': {     # non pervenuti
+                'dt': {  # non pervenuti
                     'default': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'rf': {     # non pervenuta
+                'rf': {  # non pervenuta
                     'default': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
@@ -84,7 +84,7 @@ def main():
                     'default': {'accuracy': 0.0, 'precision': 0.80, 'recall': 0.70, 'f1': 0.75},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'nb': {     # ??? Bernoulli dist o Gaussian dist? Per ora Gaussian che è la loro best
+                'nb': {  # ? Bernoulli dist o Gaussian dist? Per ora Gaussian che è la loro migliore
                     'default': {'accuracy': 0.0, 'precision': 0.51, 'recall': 0.98, 'f1': 0.67},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
@@ -93,14 +93,16 @@ def main():
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 }
             },
-        "InstaFake": dict(), "IJECE": dict(),"CompIJECE": dict(), "CompInstaFake":dict(), "ComboPar": dict(), "ComboFull": dict()
+        "InstaFake": dict(), "IJECE": dict(), "CompIJECE": dict(), "CompInstaFake": dict(),
+        "ComboPar": dict(), "ComboFull": dict()
     }
     for exp in exp_list:
         print(
             "\nRunning test on dataset 'Instagram Fake and Automated Account Detection' (internal name: 'InstaFake')...")
         if exp == "dl":
             res = dl_experiment("./deep/InstaFake/checkpoint",
-                                ["INSTAFAKE_DEFAULT_1691229438.608943", "INSTAFAKE_CUSTOM_1691229438.608943"], "if", n_iter)
+                                ["INSTAFAKE_DEFAULT_1691229438.608943", "INSTAFAKE_CUSTOM_1691229438.608943"],
+                                "if", n_iter)
         else:
             res = experiment(fake_if, correct_if, csv=False, mode=exp, n_iter=n_iter)
         results["InstaFake"][exp] = res
@@ -143,7 +145,7 @@ def main():
                              csv=False, mode=exp, n_iter=n_iter, combine=True)
         results["ComboFull"][exp] = res
 
-    datasets = ["InstaFake", "IJECE", "CompInstaFake", "CompIJECE", "ComboPar", "ComboFull"]
+    # datasets = ["InstaFake", "IJECE", "CompInstaFake", "CompIJECE", "ComboPar", "ComboFull"]
     print(results)
     print('Salvataggio delle rappresentazioni dei risultati...')
     result_plot(results, exp_list, n_iter)
