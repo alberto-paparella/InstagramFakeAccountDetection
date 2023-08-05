@@ -60,7 +60,7 @@ def result_plot(results, exp_list, n_iter):
         pass
 
     methods = {'dt': 'Decision Tree', 'rf': 'Random Forest', 'lr': 'Logistic Regression',
-               'nb': 'Naive Bayes'}  # , 'dl': 'Deep Learning'}
+               'nb': 'Naive Bayes', 'dl': 'Deep Learning'}
 
     for method in methods.keys():
         if method not in exp_list:
@@ -68,7 +68,7 @@ def result_plot(results, exp_list, n_iter):
         plt.cla()
         plt.clf()
         dataset_labels = [
-            'IF', 'IJ', 'IF_D', 'IJ_D', 'IF_C', 'IJ_C', 'COMB_P', 'COMB_F']  # , 'COMB_IF', 'COMB_IJ']
+            'IF', 'IJ', 'IF_D', 'IJ_D', 'IF_C', 'IJ_C', 'COMB_IF', 'COMB_IJ', 'COMB_P', 'COMB_F']
         metrics_labels = ['accuracy', 'precision', 'recall', 'f1']
         scores = dict()
         for m in metrics_labels:
@@ -79,8 +79,8 @@ def result_plot(results, exp_list, n_iter):
                 results['IJECE'][method]['default'][m],
                 results['InstaFake'][method]['custom'][m],
                 results['IJECE'][method]['custom'][m],
-                # results['CompInstaFake'][method]['custom'][m],
-                # results['CompIJECE'][method]['custom'][m],
+                results['CompInstaFake'][method]['custom'][m],
+                results['CompIJECE'][method]['custom'][m],
                 results['ComboPar'][method]['custom'][m],
                 results['ComboFull'][method]['custom'][m]
             ]
@@ -90,6 +90,7 @@ def result_plot(results, exp_list, n_iter):
         multiplier = 0
 
         fig, ax = plt.subplots(layout='constrained')
+        plt.gcf().set_size_inches(8, 6)
 
         for metric, score in scores.items():
             offset = width * multiplier
@@ -103,5 +104,4 @@ def result_plot(results, exp_list, n_iter):
         ax.legend(loc='best', ncols=4)
         ax.set_ylim(0.6, 1)
 
-        fig.tight_layout()
         plt.savefig(f'./dataset/visualization/plots_results/{methods[method]}_{n_iter} iter.png')
