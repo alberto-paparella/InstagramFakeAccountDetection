@@ -27,21 +27,21 @@ def run_experiment(folder, names, mode, n_iter=10):
     items = [{"model": default_model, "validation": default_validation, "idx": 0},
              {"model": custom_model, "validation": custom_validation, "idx": 1}]
     print(f"Running deep learning experiments for {n_iter} times...")
-    results = [{"Accuracy": 0, "Loss": 0, "Precision": 0, "Recall": 0, "F1": 0},
-               {"Accuracy": 0, "Loss": 0, "Precision": 0, "Recall": 0, "F1": 0}]
+    results = [{"accuracy": 0, "loss": 0, "precision": 0, "recall": 0, "f1": 0},
+               {"accuracy": 0, "loss": 0, "precision": 0, "recall": 0, "f1": 0}]
     for item in items:
         if not item["model"]:
             continue
         for i in range(n_iter):
             loss, acc, precision, recall = item["model"].evaluate(x=item["validation"].iloc[:, :-1],
                                                                   y=item["validation"].iloc[:, -1], verbose=0)
-            results[item["idx"]]["Accuracy"] += acc
-            results[item["idx"]]["Loss"] += loss
-            results[item["idx"]]["Precision"] += precision
-            results[item["idx"]]["Recall"] += recall
-            results[item["idx"]]["F1"] += 2 * (precision * recall) / (precision + recall)
+            results[item["idx"]]["accuracy"] += acc
+            results[item["idx"]]["loss"] += loss
+            results[item["idx"]]["precision"] += precision
+            results[item["idx"]]["recall"] += recall
+            results[item["idx"]]["f1"] += 2 * (precision * recall) / (precision + recall)
 
-    for elem in ["Accuracy", "Precision", "Recall", "F1"]:
+    for elem in ["accuracy", "precision", "recall", "f1"]:
         results[1][elem] = results[1][elem] / n_iter
         results[0][elem] = results[0][elem] / n_iter
         print(f"{elem} - Default: {results[0][elem]}; Custom: {results[1][elem]} ")
