@@ -10,10 +10,13 @@ from deep.InstaFake.instafake_custom import run_model as run_if_custom
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 import numpy as np
+   
 
-
-PERCENT_TRAIN = 70 # Percent of dataset to be used as train dataset
-MAX_ITER = 5000    # Maximum number of iterations for Logistic Regressors
+def f1_score(precision, recall):
+    '''
+    Function that calculates the F1-score given precision and recall.
+    '''
+    return 2 * (precision * recall) / (precision + recall)
 
 
 def get_scores(y_test, y_pred):
@@ -32,13 +35,6 @@ def get_scores(y_test, y_pred):
     scores['recall'] += metrics.recall_score(y_test, y_pred)
     scores['f1'] += metrics.f1_score(y_test, y_pred)
     return scores
-   
-
-def f1_score(precision, recall):
-    '''
-    Function that calculates the F1-score given precision and recall
-    '''
-    return 2 * (precision * recall) / (precision + recall)
 
 
 def get_classifier(model="dt", X=[], y=[]):
@@ -71,7 +67,7 @@ def get_classifier(model="dt", X=[], y=[]):
         clf = GaussianNB()
     elif model == "lr":
         # Get new Logistic Regression
-        clf = LogisticRegression(random_state=0, max_iter=MAX_ITER)
+        clf = LogisticRegression(random_state=0, max_iter=5000)
     return clf.fit(X, y)
 
 
@@ -125,7 +121,7 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
         else:
             custom_train_df, custom_test_df = treat_combined(fake, correct, demarcator)
 
-        # When running on combine or compatibility mode, default mode would not make sense
+        # When running on combine or compatibility mode, default mode would not make any sense
         if not combine and not compatibility:
             # Default mode
             if model != "mp":
@@ -202,7 +198,6 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
             avg_scores['custom']['precision'] += precision / n
             avg_scores['custom']['recall'] += recall / n
             avg_scores['custom']['f1'] += f1_score(precision / n, recall / n)
-
         print(f"{i + 1}/{n_iter}                            ", end="\r")
 
     # Averaging
@@ -211,7 +206,6 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
             avg_scores[t][s] /= n_iter
 
     print('Done!')
-
     print("Accuracy  - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['accuracy'],
                                                              avg_scores['custom']['accuracy']))
     print("Precision - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['precision'],
@@ -221,4 +215,5 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
     print("F1-score  - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['f1'],
                                                              avg_scores['custom']['f1']))
     print("=============================")
+
     return avg_scores
