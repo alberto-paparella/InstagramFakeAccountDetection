@@ -83,7 +83,6 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
     - `nbb` => Naive Bayes (Bernoulli dist.)
     - `nbg` => Naive Bayes (Gaussian dist.)
     - `lr`  => Logistic Regression
-    - `mp`  => Multilayer Perceptron
     '''
     avg_scores = {
         'default': {'accuracy': 0, 'precision': 0, 'recall': 0, 'f1': 0},
@@ -102,8 +101,6 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
         print(f"Calculating metrics for Naive Bayes (Gaussian dist.) over {n_iter} times")
     elif model == "lr":
         print(f"Calculating metrics for Logistic Regression over {n_iter} times")
-    elif model == "mp":
-        print(f"Calculating metrics for Multilayer Perceptron over {n_iter} times")
     else:
         print(f"The specified model is not supported at the moment.")
         return -1
@@ -123,83 +120,28 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
         # When running on combine or compatibility mode, default mode would not make any sense
         if not combine and not compatibility:
             # Default mode
-            if model != "mp":
-                clf = get_classifier(model, default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
-            else:
-                # Working with Multilayer Perceptron
-                print(f"Training default model {i + 1}/{n_iter}      ", end="\r")
-                if csv:
-                    # Run with IJECE
-                    clf = run_ijce_default(default_train_df)
-                else:
-                    # Run with InstaFake
-                    clf = run_if_default(default_train_df)
-
+            clf = get_classifier(model, default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
             # Get ground truth and predictions to measure performance
             X_test, y_test = default_test_df.iloc[:, :-1], default_test_df.iloc[:, -1]
-            if model != "mp":
-                y_pred = clf.predict(X_test)
-                # Default scores
-                scores = get_scores(y_test, y_pred)
-                avg_scores['default']['accuracy'] += scores['accuracy']
-                avg_scores['default']['precision'] += scores['precision']
-                avg_scores['default']['recall'] += scores['recall']
-                avg_scores['default']['f1'] += scores['f1']
-            else:
-                # Multilayer Perceptron requires a slightly different approach
-                accuracy = 0
-                precision = 0
-                recall = 0
-                n = 100
-                for _ in range(n):
-                    _, acc, prc, rec = clf.evaluate(x=X_test, y=y_test, verbose=0)
-                    accuracy += acc
-                    precision += prc
-                    recall += rec
-                avg_scores['default']['accuracy'] += accuracy / n
-                avg_scores['default']['precision'] += precision / n
-                avg_scores['default']['recall'] += recall / n
-                avg_scores['default']['f1'] += f1_score(precision / n, recall / n)
+            y_pred = clf.predict(X_test)
+            # Default scores
+            scores = get_scores(y_test, y_pred)
+            avg_scores['default']['accuracy'] += scores['accuracy']
+            avg_scores['default']['precision'] += scores['precision']
+            avg_scores['default']['recall'] += scores['recall']
+            avg_scores['default']['f1'] += scores['f1']
 
         # Custom mode
-        if model != "mp":
-            clf = get_classifier(model, custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
-        else:
-            print(f"Training custom model {i + 1}/{n_iter}      ", end="\r")
-            # Working with Multilayer Perceptron
-            if csv:
-                # Run with IJCE
-                clf = run_ijce_custom(custom_train_df)
-            else:
-                # Run with InstaFake
-                clf = run_if_custom(custom_train_df)
-
+        clf = get_classifier(model, custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
         # Get ground truth and predictions to measure performance
         X_test, y_test = custom_test_df.iloc[:, :-1], custom_test_df.iloc[:, -1]
-        if model != "mp":
-            y_pred = clf.predict(X_test)
-            # Custom scores
-            scores = get_scores(y_test, y_pred)
-            avg_scores['custom']['accuracy'] += scores['accuracy']
-            avg_scores['custom']['precision'] += scores['precision']
-            avg_scores['custom']['recall'] += scores['recall']
-            avg_scores['custom']['f1'] += scores['f1']
-        else:
-            # Multilayer Perceptron requires a slightly different approach
-            accuracy = 0
-            precision = 0
-            recall = 0
-            n = 100
-            for _ in range(n):
-                _, acc, prc, rec = clf.evaluate(x=X_test, y=y_test, verbose=0)
-                accuracy += acc
-                precision += prc
-                recall += rec
-            avg_scores['custom']['accuracy'] += accuracy / n
-            avg_scores['custom']['precision'] += precision / n
-            avg_scores['custom']['recall'] += recall / n
-            avg_scores['custom']['f1'] += f1_score(precision / n, recall / n)
-        print(f"{i + 1}/{n_iter}                            ", end="\r")
+        y_pred = clf.predict(X_test)
+        # Custom scores
+        scores = get_scores(y_test, y_pred)
+        avg_scores['custom']['accuracy'] += scores['accuracy']
+        avg_scores['custom']['precision'] += scores['precision']
+        avg_scores['custom']['recall'] += scores['recall']
+        avg_scores['custom']['f1'] += scores['f1']
 
     # Averaging
     for t in avg_scores.keys():
