@@ -1,5 +1,6 @@
 from dataset.utils import get_custom_dataset, shuffle_and_split, get_default_dataset, get_compatible_dataset, treat_combined
-from sklearn import svm, tree, metrics
+from sklearn import tree, metrics
+from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -50,10 +51,10 @@ def get_classifier(model="dt", X=[], y=[]):
         clf = tree.DecisionTreeClassifier()
     elif model == "rf":
         # Get new Random Forest
-        clf = RandomForestClassifier(max_depth=2, random_state=0)
+        clf = RandomForestClassifier(max_depth=2)
     if model == "svm":
         # Get new Support Vector Machine
-        clf = svm.SVC()
+        clf = LinearSVC(dual=False, tol=1e-5)
     elif model == "nbb":
         # Get new (Bernoulli dist.) Naive Bayes
         clf = BernoulliNB(force_alpha=True)
@@ -62,7 +63,7 @@ def get_classifier(model="dt", X=[], y=[]):
         clf = GaussianNB()
     elif model == "lr":
         # Get new Logistic Regression
-        clf = LogisticRegression(random_state=0, max_iter=5000)
+        clf = LogisticRegression(max_iter=5000)
     return clf.fit(X, y)
 
 
