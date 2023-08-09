@@ -5,6 +5,9 @@ from numpy import arange
 
 
 def data_plot(fake, correct, title, ylabel, feature, name, xlabel='ID account', zeros=True):
+    '''
+    Function to create a plot about a feature in the original dataset useful for data analysis.
+    '''
     plt.cla()
     plt.clf()
     plt.title(f"{title} - {name}")
@@ -29,12 +32,15 @@ def data_plot(fake, correct, title, ylabel, feature, name, xlabel='ID account', 
                  correct.loc[correct[feature] == 0][feature],
                  '.', color='g', markersize=1, label='0-non fake')
     plt.legend(loc='best')
-    plt.savefig(f'./dataset/visualization/plots/{name}_{ylabel}.png')
+    plt.savefig(f'./visualization/plots/{name}_{ylabel}.png')
 
 
 def print_all_plots(fake_if, correct_if, fake_IJECE, correct_IJECE):
+    '''
+    Function to print all the plots relative to the features in both datasets.
+    '''
     try:
-        os.makedirs('./dataset/visualization/plots')
+        os.makedirs('./visualization/plots')
     except FileExistsError:
         pass
 
@@ -54,13 +60,17 @@ def print_all_plots(fake_if, correct_if, fake_IJECE, correct_IJECE):
 
 
 def result_plot(results, exp_list, n_iter):
+    '''
+    Function to print plots representing the performance scores of the models provided by the experiments.
+    '''
     try:
-        os.makedirs('./dataset/visualization/plots_results')
+        os.makedirs('./visualization/plots_results')
     except FileExistsError:
         pass
 
-    methods = {'dt': 'Decision Tree', 'rf': 'Random Forest', 'lr': 'Logistic Regression',
-               'nb': 'Naive Bayes', 'dl': 'Deep Learning'}
+    methods = {'dt': 'Decision Tree', 'rf': 'Random Forest', 'svm': 'Support Vector Machine',
+               'nbb': 'Naive Bayes (Bernoulli dist.)', 'nbg': 'Naive Bayes (Gaussian dist.)',
+               'lr': 'Logistic Regression', 'mp': 'Multilayer Perceptron'}
 
     for method in methods.keys():
         if method not in exp_list:
@@ -104,4 +114,4 @@ def result_plot(results, exp_list, n_iter):
         ax.legend(loc='best', ncols=4)
         ax.set_ylim(0.6, 1)
 
-        plt.savefig(f'./dataset/visualization/plots_results/{methods[method]}_{n_iter} iter.png')
+        plt.savefig(f'./visualization/plots_results/{methods[method]}_{n_iter} iter.png')

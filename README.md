@@ -18,22 +18,25 @@ Once the script is running, follow the instructions on screen.
 
 ## Codebase structure
 
-- `main.py` serves as executable script to run the experiments
-- `generate_dl_dataset.py` serves as executable script to instantiate or reset deep learning models
+- `main.py` serves as executable script to run the experiments.
+- `generate_dl_dataset.py` serves as executable script to instantiate or reset deep learning models.
+- `utils/utils.py` contains many useful functions such as the ones to run the experiments or get the metric scores.
 - `dataset/`
-   - `normalizer.py`
-   - ` utils.py`
+   - `normalizer.py` contains a script to create a single dataset from two different ones and export it in .json format.
+   - `utils.py` contains many useful functions to work with the datasets, such as shuffling and splitting and getting combined datasets.
    - `deep/`
-   - `sources/`
-   - `visualization/`
-      - `plotter.py`
-      - `plots/`
-      - `plots_results`
-   - `deep/`
-      - `common.py`
-      - `experiment.py`
-      - `combined/`
-      - `compatible/`
-      - `IJECE/`
-      - `InstaFake/`
-   - `utils/utils.py` contains many useful functions such as the ones to run the experiments or get the metric scores.
+   - `sources/` contains the datasets that are being used for the experiments.
+      - `automatedAccountData.json` contains the fake accounts of the `InstaFake` dataset.
+      - `nonautomatedAccountData.json` contains the real accounts of the `InstaFake` dataset.
+      - `user_fake_authentic_2class.csv` contains the `IJECE` dataset.
+- `deep/`
+   - `common.py`
+   - `experiment.py`
+   - `combined/`
+   - `compatible/`
+   - `IJECE/`
+   - `InstaFake/`
+- `visualization/`
+   - `plotter.py` contains many useful functions to plot data and results.
+   - `plots/` contains the plots for the data analysis on the original datasets.
+   - `plots_results/` contains the plots representing the result of the experiments.

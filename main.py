@@ -1,7 +1,7 @@
 from dataset.normalizer import json_importer_full, csv_importer_full
 from dataset.utils import find_demarcator, get_combined_datasets
-from dataset.visualization.plotter import print_all_plots, result_plot
 from utils.utils import experiment
+from visualization.plotter import print_all_plots, result_plot
 from deep.experiment import run_experiment as dl_experiment
 
 
@@ -61,39 +61,56 @@ def main():
                     'default': {'accuracy': 0.9009, 'precision': 0.907, 'recall': 0.901, 'f1': 0.901},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'lr': {
-                    'default': {'accuracy': 0.8094, 'precision': 0.11, 'recall': 0.809, 'f1': 0.809},
+                'svm': { # Not used
+                    'default': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'nb': {
+                'nbb': { # Not used
+                    'default': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0},
+                    'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+                },
+                'nbg': {
                     'default': {'accuracy': 0.7312, 'precision': 0.759, 'recall': 0.731, 'f1': 0.724},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'dl': {
+                'lr': {
+                    'default': {'accuracy': 0.8094, 'precision': 0.81, 'recall': 0.809, 'f1': 0.809},
+                    'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+                },
+                'mp': {
                     'default': {'accuracy': 0.8173, 'precision': 0.818, 'recall': 0.817, 'f1': 0.817},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 }
             },
         "IFPaper":
+            # In the InstaFake paper, they only take into consideration precision, recall and f1-score
             {
-                'dt': {  # non pervenuti
+                'dt': {  # Not used
                     'default': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'rf': {  # non pervenuta
+                'rf': {  # Not used
                     'default': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0},
+                    'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+                },
+                'svm': {
+                    'default': {'accuracy': 0.0, 'precision': 0.91, 'recall': 0.82, 'f1': 0.86},
+                    'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+                },
+                'nbb': {
+                    'default': {'accuracy': 0.0, 'precision': 0.85, 'recall': 0.68, 'f1': 0.78},
+                    'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+                },
+                'nbg': {
+                    'default': {'accuracy': 0.0, 'precision': 0.51, 'recall': 0.98, 'f1': 0.67},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
                 'lr': {
                     'default': {'accuracy': 0.0, 'precision': 0.80, 'recall': 0.70, 'f1': 0.75},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 },
-                'nb': {  # ? Bernoulli dist o Gaussian dist? Per ora Gaussian che è la loro migliore
-                    'default': {'accuracy': 0.0, 'precision': 0.51, 'recall': 0.98, 'f1': 0.67},
-                    'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
-                },
-                'dl': {
-                    'default': {'accuracy': 0.0, 'precision': 0.89, 'recall': 0.70, 'f1': 0.86},
+                'mp': {
+                    'default': {'accuracy': 0.0, 'precision': 0.89, 'recall': 0.84, 'f1': 0.86},
                     'custom': {'accuracy': 0.0, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
                 }
             },

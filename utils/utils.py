@@ -9,7 +9,6 @@ from deep.InstaFake.instafake_default import run_model as run_if_default
 from deep.InstaFake.instafake_custom import run_model as run_if_custom
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
-import numpy as np
    
 
 def f1_score(precision, recall):
@@ -147,6 +146,7 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
                 avg_scores['default']['recall'] += scores['recall']
                 avg_scores['default']['f1'] += scores['f1']
             else:
+                # Multilayer Perceptron requires a slightly different approach
                 accuracy = 0
                 precision = 0
                 recall = 0
@@ -185,6 +185,7 @@ def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarca
             avg_scores['custom']['recall'] += scores['recall']
             avg_scores['custom']['f1'] += scores['f1']
         else:
+            # Multilayer Perceptron requires a slightly different approach
             accuracy = 0
             precision = 0
             recall = 0
