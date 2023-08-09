@@ -15,3 +15,25 @@ This section contains instructions to configure and run the project.
 5. Run the script ``` main.py ``` with the command ``` ./venv/bin/python ./main.py ```.  
 
 Once the script is running, follow the instructions on screen.
+
+## Codebase structure
+
+- `main.py` serves as executable script to run the experiments
+- `generate_dl_dataset.py` serves as executable script to instantiate or reset deep learning models
+- `dataset/`
+   - `normalizer.py`
+   - ` utils.py`
+   - `deep/`
+   - `sources/`
+   - `visualization/`
+      - `plotter.py`
+      - `plots/`
+      - `plots_results`
+   - `deep/`
+      - `common.py`
+      - `experiment.py`
+      - `combined/`
+      - `compatible/`
+      - `IJECE/`
+      - `InstaFake/`
+   - `utils/utils.py` contains many useful functions such as the ones to run the experiments or get the metric scores.

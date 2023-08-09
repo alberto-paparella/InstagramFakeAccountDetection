@@ -1,6 +1,6 @@
-from dataset.utils import get_custom_dataset, shuffle_and_split, get_default_dataset, get_compatible_dataset, \
-    treat_combined
-from sklearn import tree, metrics
+from dataset.utils import get_custom_dataset, shuffle_and_split, get_default_dataset, get_compatible_dataset, treat_combined
+from sklearn import svm, tree, metrics
+from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from deep.IJECE.IJECE_custom import run_model as run_ijce_custom
@@ -11,147 +11,152 @@ from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 import numpy as np
 
-PERCENT_TRAIN = 70
-MAX_ITER = 5000  # Maximum number of iterations for Logistic Regressors
+
+PERCENT_TRAIN = 70 # Percent of dataset to be used as train dataset
+MAX_ITER = 5000    # Maximum number of iterations for Logistic Regressors
 
 
-def fit_decision_tree(X, y, validation_df):
-    clf = tree.DecisionTreeClassifier()
-    clf = clf.fit(X, y)
-    # print("Fitting complete.")
-
-    X_val, y_val = validation_df.iloc[:, :-1], validation_df.iloc[:, -1]
-    y_pred = clf.predict(X_val)
-    return y_val, y_pred
-
-
-def get_scores(y_val, y_pred):
+def get_scores(y_test, y_pred):
+    '''
+    Function that given the ground truth and the predicted values provides the
+    metric scores (accuracy, precision, recall, f1-score).
+    '''
     scores = {
         'accuracy': 0,
         'precision': 0,
         'recall': 0,
         'f1': 0
     }
-    scores['accuracy'] += metrics.accuracy_score(y_val, y_pred)
-    scores['precision'] += metrics.precision_score(y_val, y_pred)
-    scores['recall'] += metrics.recall_score(y_val, y_pred)
-    scores['f1'] += metrics.f1_score(y_val, y_pred)
+    scores['accuracy'] += metrics.accuracy_score(y_test, y_pred)
+    scores['precision'] += metrics.precision_score(y_test, y_pred)
+    scores['recall'] += metrics.recall_score(y_test, y_pred)
+    scores['f1'] += metrics.f1_score(y_test, y_pred)
     return scores
-
-
-'''
-basic naive bayes feature equation
-'''
-
-
-def naive_bayes(x, y_i, y):
-    """Naive-Bayes function"""
-    p = x[y == y_i].sum(0)
-    return (p + 1) / ((y == y_i).sum() + 1)
-
-
-def naive_bayes_support_vector_machine(x, y):
-    y = y.values
-    r = np.log(naive_bayes(x, 1, y) / naive_bayes(x, 0, y))
-    # m = LogisticRegression(C=4, dual=True) # This gives an error
-    m = LogisticRegression(C=4, dual=False, max_iter=MAX_ITER)
-    x_nb = x.multiply(r)
-    return m.fit(x_nb, y), r
-
+   
 
 def f1_score(precision, recall):
+    '''
+    Function that calculates the F1-score given precision and recall
+    '''
     return 2 * (precision * recall) / (precision + recall)
 
 
-@ignore_warnings(category=ConvergenceWarning)
-def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcator=700, compatibility=False):
+def get_classifier(model="dt", X=[], y=[]):
     '''
-    A function which execution an experiment fitting a model `n_iter` times and giving
-    back the `avg_scores` for various metrics such as `accuracy`, `precision`, `recall`, ...
+    Function that creates and fits a classifier of type `model` based
+    on inputs `X` and outputs `y` and returns the fitted model.
 
-    `modes`:
-    - `dt` => DecisionTree
-    - `lr` => LogisticRegression
-    - `nb` => NaiveBayes (NB-SVM, but using LogisticRegression instead)
-    - `rf` => RandomForest approach
-    - `dl` => DeepLearning approach using neural networks
+    `Available models`:
+    - `dt`  => Decision Tree
+    - `rf`  => Random Forest 
+    - `svm` => Support Vector Machine
+    - `nbb` => Naive Bayes (Bernoulli dist.)
+    - `nbg` => Naive Bayes (Gaussian dist.)
+    - `lr`  => Logistic Regression
+    '''
+    if model == "dt":
+        # Get new Decision Tree
+        clf = tree.DecisionTreeClassifier()
+    elif model == "rf":
+        # Get new Random Forest
+        clf = RandomForestClassifier(max_depth=2, random_state=0)
+    if model == "svm":
+        # Get new Support Vector Machine
+        clf = svm.SVC()
+    elif model == "nbb":
+        # Get new (Bernoulli dist.) Naive Bayes
+        clf = BernoulliNB(force_alpha=True)
+    elif model == "nbg":
+        # Get new (Gaussian dist.) Naive Bayes
+        clf = GaussianNB()
+    elif model == "lr":
+        # Get new Logistic Regression
+        clf = LogisticRegression(random_state=0, max_iter=MAX_ITER)
+    return clf.fit(X, y)
+
+
+@ignore_warnings(category=ConvergenceWarning)
+def experiment(fake, correct, csv, model="dt", n_iter=20, combine=False, demarcator=700, compatibility=False):
+    '''
+    A function which executes an experiment fitting a specified model `n_iter` times and giving
+    back the `avg_scores` for various metrics such as `accuracy`, `precision`, `recall`, `f1-score`.
+
+    `Available models`:
+    - `dt`  => Decision Tree
+    - `rf`  => Random Forest 
+    - `svm` => Support Vector Machine
+    - `nbb` => Naive Bayes (Bernoulli dist.)
+    - `nbg` => Naive Bayes (Gaussian dist.)
+    - `lr`  => Logistic Regression
+    - `mp`  => Multilayer Perceptron
     '''
     avg_scores = {
         'default': {'accuracy': 0, 'precision': 0, 'recall': 0, 'f1': 0},
         'custom': {'accuracy': 0, 'precision': 0, 'recall': 0, 'f1': 0}
     }
 
-    if mode == "dt":
+    if model == "dt":
         print(f"Calculating metrics for Decision Trees over {n_iter} times")
-    elif mode == "lr":
-        print(f"Calculating metrics for Logistic Regression over {n_iter} times")
-    elif mode == "nb":
-        print(f"Calculating metrics for Naive Bayes (Logistic Regression) over {n_iter} times")
-    elif mode == "rf":
+    elif model == "rf":
         print(f"Calculating metrics for Random Forests over {n_iter} times")
-    elif mode == "dl":
-        print(f"Calculating metrics for Deep Learning over {n_iter} times")
+    elif model == "svm":
+        print(f"Calculating metrics for Support Vector Machine over {n_iter} times")
+    elif model == "nbb":
+        print(f"Calculating metrics for Naive Bayes (Bernoulli dist.) over {n_iter} times")
+    elif model == "nbg":
+        print(f"Calculating metrics for Naive Bayes (Gaussian dist.) over {n_iter} times")
+    elif model == "lr":
+        print(f"Calculating metrics for Logistic Regression over {n_iter} times")
+    elif model == "mp":
+        print(f"Calculating metrics for Multilayer Perceptron over {n_iter} times")
     else:
+        print(f"The specified model is not supported at the moment.")
         return -1
 
     for i in range(n_iter):
-        # Get new train_df and validation_df, same for default and custom
+        # Get new train_df and test_df, same for default and custom
         if not combine:
-            train_df, validation_df = shuffle_and_split(fake, correct)
+            train_df, test_df = shuffle_and_split(fake, correct)
             if compatibility:
-                custom_train_df, custom_validation_df = get_compatible_dataset(train_df, validation_df, csv)
+                custom_train_df, custom_test_df = get_compatible_dataset(train_df, test_df, csv)
             else:
-                custom_train_df, custom_validation_df = get_custom_dataset(train_df, validation_df, csv)
-                default_train_df, default_validation_df = get_default_dataset(train_df, validation_df, csv)
+                custom_train_df, custom_test_df = get_custom_dataset(train_df, test_df, csv)
+                default_train_df, default_test_df = get_default_dataset(train_df, test_df, csv)
         else:
-            custom_train_df, custom_validation_df = treat_combined(fake, correct, demarcator)
+            custom_train_df, custom_test_df = treat_combined(fake, correct, demarcator)
+
+        # When running on combine or compatibility mode, default mode would not make sense
         if not combine and not compatibility:
             # Default mode
-            if mode == "dt":
-                # Get new Decision Tree
-                clf = tree.DecisionTreeClassifier()
-                clf = clf.fit(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
-            elif mode == "lr":
-                # Get new Logistic Regressor
-                clf = LogisticRegression(random_state=0, max_iter=MAX_ITER)
-                clf = clf.fit(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
-            elif mode == "nb":
-                '''
-                Here we try using NBSVM (Naive Bayes - Support Vector Machine) but using sklearn's logistic regression rather than SVM,
-                although in practice the two are nearly identical. NBSVM was introduced by Sida Wang and Chris Manning in the paper
-                [Baselines and Bigrams: Simple, Good Sentiment and Topic Classiﬁcation](https://nlp.stanford.edu/pubs/sidaw12_simple_sentiment.pdf).
-                '''
-                clf, r = naive_bayes_support_vector_machine(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
-            elif mode == "rf":
-                clf = RandomForestClassifier(max_depth=2, random_state=0)
-                clf = clf.fit(default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
-            elif mode == "dl":
+            if model != "mp":
+                clf = get_classifier(model, default_train_df.iloc[:, :-1], default_train_df.iloc[:, -1])
+            else:
+                # Working with Multilayer Perceptron
                 print(f"Training default model {i + 1}/{n_iter}      ", end="\r")
-                # Get new DL
                 if csv:
-                    # Go with IJCE
+                    # Run with IJECE
                     clf = run_ijce_default(default_train_df)
                 else:
+                    # Run with InstaFake
                     clf = run_if_default(default_train_df)
 
             # Get ground truth and predictions to measure performance
-            X_val, y_val = default_validation_df.iloc[:, :-1], default_validation_df.iloc[:, -1]
-            if mode == "dl":
-                '''
-                precision = 0
-                accuracy = 0
-                for x in range(10):
-                    loss, acc = clf.evaluate(x=X_val, y=y_val, verbose=0)
-                    accuracy += acc
-                avg_scores['default']['precision'] += accuracy / 10
-                avg_scores['default']['accuracy'] += accuracy / 10
-                '''
+            X_test, y_test = default_test_df.iloc[:, :-1], default_test_df.iloc[:, -1]
+            if model != "mp":
+                y_pred = clf.predict(X_test)
+                # Default scores
+                scores = get_scores(y_test, y_pred)
+                avg_scores['default']['accuracy'] += scores['accuracy']
+                avg_scores['default']['precision'] += scores['precision']
+                avg_scores['default']['recall'] += scores['recall']
+                avg_scores['default']['f1'] += scores['f1']
+            else:
                 accuracy = 0
                 precision = 0
                 recall = 0
                 n = 100
                 for _ in range(n):
-                    _, acc, prc, rec = clf.evaluate(x=X_val, y=y_val, verbose=0)
+                    _, acc, prc, rec = clf.evaluate(x=X_test, y=y_test, verbose=0)
                     accuracy += acc
                     precision += prc
                     recall += rec
@@ -159,61 +164,37 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
                 avg_scores['default']['precision'] += precision / n
                 avg_scores['default']['recall'] += recall / n
                 avg_scores['default']['f1'] += f1_score(precision / n, recall / n)
-            else:
-                if mode != "nb":
-                    y_pred = clf.predict(X_val)
-                else:
-                    y_pred = clf.predict(X_val.multiply(r))
-
-                # Default scores
-                scores = get_scores(y_val, y_pred)
-                avg_scores['default']['accuracy'] += scores['accuracy']
-                avg_scores['default']['precision'] += scores['precision']
-                avg_scores['default']['recall'] += scores['recall']
-                avg_scores['default']['f1'] += scores['f1']
 
         # Custom mode
-        if mode == "dt":
-            # Get new Decision Tree
-            clf = tree.DecisionTreeClassifier()
-            clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
-        elif mode == "lr":
-            # Get new Logistic Regressor
-            clf = LogisticRegression(random_state=0, max_iter=2500)
-            clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
-        elif mode == "nb":
-            # Get new Naive Bayes (Logistic Regression)
-            clf, r = naive_bayes_support_vector_machine(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
-        elif mode == "rf":
-            clf = RandomForestClassifier(max_depth=2, random_state=0)
-            clf = clf.fit(custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
-        elif mode == "dl":
+        if model != "mp":
+            clf = get_classifier(model, custom_train_df.iloc[:, :-1], custom_train_df.iloc[:, -1])
+        else:
             print(f"Training custom model {i + 1}/{n_iter}      ", end="\r")
-            # Get new DL
+            # Working with Multilayer Perceptron
             if csv:
-                # Go with IJCE
+                # Run with IJCE
                 clf = run_ijce_custom(custom_train_df)
             else:
+                # Run with InstaFake
                 clf = run_if_custom(custom_train_df)
 
         # Get ground truth and predictions to measure performance
-        X_val, y_val = custom_validation_df.iloc[:, :-1], custom_validation_df.iloc[:, -1]
-        if mode == "dl":
-            '''
-            precision = 0
-            accuracy = 0
-            for x in range(10):
-                loss, acc = clf.evaluate(x=X_val, y=y_val, verbose=0)
-                accuracy += acc
-            avg_scores['custom']['precision'] += accuracy / 10
-            avg_scores['custom']['accuracy'] += accuracy / 10
-            '''
+        X_test, y_test = custom_test_df.iloc[:, :-1], custom_test_df.iloc[:, -1]
+        if model != "mp":
+            y_pred = clf.predict(X_test)
+            # Custom scores
+            scores = get_scores(y_test, y_pred)
+            avg_scores['custom']['accuracy'] += scores['accuracy']
+            avg_scores['custom']['precision'] += scores['precision']
+            avg_scores['custom']['recall'] += scores['recall']
+            avg_scores['custom']['f1'] += scores['f1']
+        else:
             accuracy = 0
             precision = 0
             recall = 0
             n = 100
             for _ in range(n):
-                _, acc, prc, rec = clf.evaluate(x=X_val, y=y_val, verbose=0)
+                _, acc, prc, rec = clf.evaluate(x=X_test, y=y_test, verbose=0)
                 accuracy += acc
                 precision += prc
                 recall += rec
@@ -221,17 +202,6 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
             avg_scores['custom']['precision'] += precision / n
             avg_scores['custom']['recall'] += recall / n
             avg_scores['custom']['f1'] += f1_score(precision / n, recall / n)
-        else:
-            if mode != "nb":
-                y_pred = clf.predict(X_val)
-            else:
-                y_pred = clf.predict(X_val.multiply(r))
-            # Custom scores
-            scores = get_scores(y_val, y_pred)
-            avg_scores['custom']['accuracy'] += scores['accuracy']
-            avg_scores['custom']['precision'] += scores['precision']
-            avg_scores['custom']['recall'] += scores['recall']
-            avg_scores['custom']['f1'] += scores['f1']
 
         print(f"{i + 1}/{n_iter}                            ", end="\r")
 
@@ -242,13 +212,13 @@ def experiment(fake, correct, csv, mode="dt", n_iter=20, combine=False, demarcat
 
     print('Done!')
 
-    print("Accuracy - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['accuracy'],
-                                                            avg_scores['custom']['accuracy']))
+    print("Accuracy  - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['accuracy'],
+                                                             avg_scores['custom']['accuracy']))
     print("Precision - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['precision'],
                                                              avg_scores['custom']['precision']))
-    print("Recall - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['recall'],
-                                                          avg_scores['custom']['recall']))
-    print("F1 - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['f1'],
-                                                      avg_scores['custom']['f1']))
+    print("Recall    - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['recall'],
+                                                             avg_scores['custom']['recall']))
+    print("F1-score  - Default {:.3f}; Custom {:.3f}".format(avg_scores['default']['f1'],
+                                                             avg_scores['custom']['f1']))
     print("=============================")
     return avg_scores
