@@ -3,10 +3,6 @@ from sklearn import svm, tree, metrics
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from deep.IJECE.IJECE_custom import run_model as run_ijce_custom
-from deep.IJECE.IJECE_default import run_model as run_ijce_default
-from deep.InstaFake.instafake_default import run_model as run_if_default
-from deep.InstaFake.instafake_custom import run_model as run_if_custom
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
    
