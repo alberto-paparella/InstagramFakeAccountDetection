@@ -1,10 +1,10 @@
 .idea/
 dataset/__pycache__/
-dataset/visualization/__pycache__/
-dataset/visualization/plots/
-dataset/visualization/plots_results/
 deep/__pycache__/
 deep/IJECE/__pycache__/
 deep/InstaFake/__pycache__/
 utils/__pycache__/
+visualization/__pycache__/
+visualization/plots/
+visualization/plots_results/
 venv/
