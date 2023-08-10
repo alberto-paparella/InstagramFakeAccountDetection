@@ -78,21 +78,21 @@ def result_plot(results, exp_list, n_iter):
         plt.cla()
         plt.clf()
         dataset_labels = [
-            'IJ_Pap', 'IJ_Def', 'IJ_Cus', 'IJ_Com',
             'IF_Pap', 'IF_Def', 'IF_Cus', 'IF_Com',
+            'IJ_Pap', 'IJ_Def', 'IJ_Cus', 'IJ_Com',
             'Combo_P', 'Combo_F']
         metrics_labels = ['accuracy', 'precision', 'recall', 'f1']
         scores = dict()
         for m in metrics_labels:
             scores[m] = [
-                results['IJECEPaper'][method]['default'][m],
-                results['IJECE'][method]['default'][m],
-                results['IJECE'][method]['custom'][m],
-                results['CompIJECE'][method]['custom'][m],
                 results['IFPaper'][method]['default'][m],
                 results['InstaFake'][method]['default'][m],
                 results['InstaFake'][method]['custom'][m],
                 results['CompInstaFake'][method]['custom'][m],
+                results['IJECEPaper'][method]['default'][m],
+                results['IJECE'][method]['default'][m],
+                results['IJECE'][method]['custom'][m],
+                results['CompIJECE'][method]['custom'][m],
                 results['ComboPar'][method]['custom'][m],
                 results['ComboFull'][method]['custom'][m]
             ]
