@@ -1,8 +1,8 @@
 import pandas as pd
 from keras.optimizers import Adam
-from tensorflow.keras.layers import Input, Dense, Normalization
+from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
-from tensorflow.keras.metrics import Accuracy, Precision, Recall
+from tensorflow.keras.metrics import Precision, Recall
 from deep.common import LayerConfiguration
 from tensorflow import convert_to_tensor
 import tensorflow

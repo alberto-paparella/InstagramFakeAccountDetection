@@ -2,7 +2,7 @@ import pandas as pd
 from keras.optimizers import Adam
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
-from tensorflow.keras.metrics import Accuracy, Precision, Recall
+from tensorflow.keras.metrics import Precision, Recall
 from deep.common import LayerConfiguration
 import tensorflow
 from tensorflow import convert_to_tensor

@@ -1,5 +1,3 @@
-import os
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from deep.common import get_dataset_combined
