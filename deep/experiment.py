@@ -8,16 +8,16 @@ def run_experiment(folder, names, mode, n_iter=10):
         (default_train, default_validation), (custom_train, custom_validation) = get_dataset_instafake()
     elif mode == "combo-par":
         (custom_train, custom_validation) = get_dataset_combined(False)
-        default_validation = default_validation = None
+        default_validation = None
     elif mode == "combo-full":
         (custom_train, custom_validation) = get_dataset_combined(True)
-        default_validation = default_validation = None
+        default_validation = None
     elif mode == "comp-if":
         (custom_train, custom_validation) = get_compatible_dataset("if")
-        default_validation = default_validation = None
+        default_validation = None
     elif mode == "comp-ijece":
         (custom_train, custom_validation) = get_compatible_dataset("ijece")
-        default_validation = default_validation = None
+        default_validation = None
     else:
         return
     default_model = None
