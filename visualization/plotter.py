@@ -114,6 +114,6 @@ def result_plot(results, exp_list, n_iter):
         ax.set_title(f'Scores for every dataset with {methods[method]} in {n_iter} iterations')
         ax.set_xticks(x + width, dataset_labels)
         ax.legend(loc='best', ncols=4)
-        ax.set_ylim(0.6, 1)
+        ax.set_ylim(0.5, 1)
 
         plt.savefig(f'./visualization/plots_results/{methods[method]}_{n_iter} iter.png')
