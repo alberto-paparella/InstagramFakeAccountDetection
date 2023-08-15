@@ -139,7 +139,7 @@ def main():
         print("\nRunning test on dataset 'Compatibile - InstaFake' (internal name: 'CompInstaFake')...")
         if exp == "mp":
             res = dl_experiment("./deep/compatible/checkpoint",
-                                ["", "COMP_INSTAFAKE_1691236160.709982"], "comp-if", n_iter)
+                                ["", "COMP_INSTAFAKE_1692008885.702353"], "comp-if", n_iter)
         else:
             res = experiment(fake_if, correct_if, csv=False, model=exp, n_iter=n_iter, compatibility=True)
         results["CompInstaFake"][exp] = res
@@ -147,7 +147,7 @@ def main():
         print("\nRunning test on dataset 'Compatibile - IJECE' (internal name: 'CompIJECE')...")
         if exp == "mp":
             res = dl_experiment("./deep/compatible/checkpoint",
-                                ["", "COMP_IJECE_1691236160.709982"], "comp-ijece", n_iter)
+                                ["", "COMP_IJECE_1692008885.702353"], "comp-ijece", n_iter)
         else:
             res = experiment(fake_IJECE, correct_IJECE, csv=True, model=exp, n_iter=n_iter, compatibility=True)
         results["CompIJECE"][exp] = res
