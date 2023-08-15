@@ -10,8 +10,9 @@ results = {"custom": {"accuracy": 0, "loss": 0, "precision": 0, "recall": 0},
 (default_train, default_validation), (custom_train, custom_validation) = get_dataset_IJECE()
 timestamp = datetime.datetime.now().timestamp()
 
-custom_model = train_save("IJECE_CUSTOM", custom_train, run_custom_model, "./deep/IJECE/checkpoint", timestamp)
 default_model = train_save("IJECE_DEFAULT", default_train, run_default_model, "./deep/IJECE/checkpoint", timestamp)
+custom_model = train_save("IJECE_CUSTOM", custom_train, run_custom_model, "./deep/IJECE/checkpoint", timestamp)
+
 
 print(f"Now evaluating custom model {eval_steps} times...")
 for i in range(eval_steps):

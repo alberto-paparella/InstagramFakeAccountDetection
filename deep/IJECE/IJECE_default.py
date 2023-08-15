@@ -14,7 +14,7 @@ def run_model(train):
     y = convert_to_tensor(train.iloc[:, -1])
     input_layer = Input(shape=len(train.columns) - 1, name="input")
     learning = {"rate": 0.001, "epochs": 100, 'batch_size': 16}
-    layers = [LayerConfiguration(32), LayerConfiguration(32)]
+    layers = [LayerConfiguration(8), LayerConfiguration(8)]
     lr = input_layer
     i = 0
     for layer in layers:

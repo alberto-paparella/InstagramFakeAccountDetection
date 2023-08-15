@@ -132,7 +132,7 @@ def main():
         print("\nRunning test on dataset 'IJECE' (internal name: 'IJECE')...")
         if exp == "mp":
             res = dl_experiment("./deep/IJECE/checkpoint",
-                                ["IJECE_DEFAULT_1692117633.175381", "IJECE_CUSTOM_1692011876.988308"], "ijece", n_iter)
+                                ["IJECE_DEFAULT_1692120663.149388", "IJECE_CUSTOM_1692120054.02869"], "ijece", n_iter)
         else:
             res = experiment(fake_IJECE, correct_IJECE, csv=True, model=exp, n_iter=n_iter)
         results["IJECE"][exp] = res
