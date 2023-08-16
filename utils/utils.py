@@ -54,16 +54,16 @@ def get_classifier(model="dt", X=[], y=[]):
         clf = RandomForestClassifier(max_depth=2)
     if model == "svm":
         # Get new Support Vector Machine
-        clf = LinearSVC(dual=False, tol=1e-5)
+        clf = LinearSVC(dual=False, tol=1e-5, C=1.0)
     elif model == "nbb":
         # Get new (Bernoulli dist.) Naive Bayes
-        clf = BernoulliNB(force_alpha=True)
+        clf = BernoulliNB(alpha = 500.0, force_alpha=True)
     elif model == "nbg":
         # Get new (Gaussian dist.) Naive Bayes
         clf = GaussianNB()
     elif model == "lr":
         # Get new Logistic Regression
-        clf = LogisticRegression(max_iter=5000)
+        clf = LogisticRegression(dual=False, tol=1e-5, C=1.0, max_iter=5000)
     return clf.fit(X, y)
 
 
