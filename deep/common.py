@@ -19,7 +19,7 @@ class LayerConfiguration:
 def get_dataset_IJECE():
     """
     Loads the IJECE dataset for deep learning
-    :return: ((default_train_df, default_val_df), (custom_train_df, custom_val_df))
+    :return: ((default_train_df, default_test_df), (custom_train_df, custom_test_df))
     """
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if not path in sys.path:
@@ -27,27 +27,27 @@ def get_dataset_IJECE():
     os.chdir(path)
     del path
     train_df = pd.read_csv("dataset/deep/IJECE_df_train.csv")
-    val_df = pd.read_csv("dataset/deep/IJECE_df_val.csv")
-    return get_default_dataset(train_df, val_df, True), get_custom_dataset(train_df, val_df, True)
+    test_df = pd.read_csv("dataset/deep/IJECE_df_val.csv")
+    return get_default_dataset(train_df, test_df, True), get_custom_dataset(train_df, test_df, True)
 
 
 def get_dataset_instafake():
     """
     Loads the InstaFake dataset for deep learning
-    :return: ((default_train_df, default_val_df), (custom_train_df, custom_val_df))
+    :return: ((default_train_df, default_test_df), (custom_train_df, custom_test_df))
     """
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     os.chdir(path)
     train_df = pd.read_json("dataset/deep/instafake_df_train.json")
-    val_df = pd.read_json("dataset/deep/instafake_df_val.json")
-    return get_default_dataset(train_df, val_df, False), get_custom_dataset(train_df, val_df, False)
+    test_df = pd.read_json("dataset/deep/instafake_df_val.json")
+    return get_default_dataset(train_df, test_df, False), get_custom_dataset(train_df, test_df, False)
 
 
 def get_dataset_combined(full=False):
     """
     Loads the combined dataset for deep learning
     :param full: boolean, whether or not to load the combo_full or the combo_par
-    :return: (train_df, val_df)
+    :return: (train_df, test_df)
     """
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if not path in sys.path:
@@ -56,18 +56,18 @@ def get_dataset_combined(full=False):
     del path
     if full:
         train_df = pd.read_json("dataset/deep/combo_full_df_train.json")
-        val_df = pd.read_json("dataset/deep/combo_full_df_val.json")
+        test_df = pd.read_json("dataset/deep/combo_full_df_val.json")
     else:
         train_df = pd.read_json("dataset/deep/combo_partial_df_train.json")
-        val_df = pd.read_json("dataset/deep/combo_partial_df_val.json")
-    return train_df, val_df
+        test_df = pd.read_json("dataset/deep/combo_partial_df_val.json")
+    return train_df, test_df
 
 
 def get_compatible_dataset(mode="if"):
     """
     Loads the compatible dataset for deep learning
     :param mode: can either be if or ijece, chooses which dataset will get loaded up.
-    :return: (train_df, val_df)
+    :return: (train_df, test_df)
     """
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if not path in sys.path:
@@ -76,13 +76,13 @@ def get_compatible_dataset(mode="if"):
     del path
     if mode == "if":
         train_df = pd.read_json("dataset/deep/comp_instafake_df_train.json")
-        val_df = pd.read_json("dataset/deep/comp_instafake_df_val.json")
+        test_df = pd.read_json("dataset/deep/comp_instafake_df_val.json")
     elif mode == "ijece":
         train_df = pd.read_json("dataset/deep/comp_ijece_df_train.json")
-        val_df = pd.read_json("dataset/deep/comp_ijece_df_val.json")
+        test_df = pd.read_json("dataset/deep/comp_ijece_df_val.json")
     else:
         return None, None
-    return train_df, val_df
+    return train_df, test_df
 
 
 def train_save(name, train, runner, folder, timestamp):
