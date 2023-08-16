@@ -15,6 +15,8 @@ This section contains instructions to configure and run the project.
 5. Run the script ``` main.py ``` with the command ``` ./venv/bin/python ./main.py ```.  
 
 Once the script is running, follow the instructions on screen.
+**Never run ```generate_dl_dataset.py```**, as it's not needed for the demo and **will** invalidate all the work done on
+the MLP experiments.
 
 ## Codebase structure
 
