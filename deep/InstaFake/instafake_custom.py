@@ -12,7 +12,7 @@ def run_model(train):
     train: pd.DataFrame
     input_layer = Input(shape=len(train.columns) - 1, name="input")
     learning = {"rate": 0.001, "epochs": 100, 'batch_size': 16}
-    layers = [LayerConfiguration(32), LayerConfiguration(32)]
+    layers = [LayerConfiguration(8), LayerConfiguration(8)]
     lr = input_layer
     i = 0
     for layer in layers:
@@ -26,5 +26,5 @@ def run_model(train):
                            Precision(),
                            Recall()])
     data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
-                     batch_size=learning["batch_size"], verbose=True, callbacks=[reduce_lr])
+                     batch_size=learning["batch_size"], verbose=True, callbacks=[reduce_lr], validation_split=0.1)
     return model, data.history, layers, learning

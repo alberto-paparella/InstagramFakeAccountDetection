@@ -28,5 +28,5 @@ def run_model(train):
                            Precision(),
                            Recall()])
     data = model.fit(x=train.iloc[:, :-1], y=train.iloc[:, -1], epochs=learning["epochs"],
-                     batch_size=learning["batch_size"], verbose=True,callbacks=[reduce_lr])
+                     batch_size=learning["batch_size"], verbose=True,callbacks=[reduce_lr], validation_split=0.1)
     return model, data.history, layers, learning
