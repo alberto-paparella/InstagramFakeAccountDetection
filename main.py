@@ -1,3 +1,4 @@
+# This script serves as the main runner for the project.
 from dataset.normalizer import json_importer_full, csv_importer_full
 from dataset.utils import find_demarcator, get_combined_datasets
 from utils.utils import experiment
@@ -173,6 +174,7 @@ def main():
     print('Salvataggio delle rappresentazioni dei risultati...')
     result_plot(results, exp_list, n_iter)
     print('Grafici dei risultati disponibili.')
+    print("Esecuzione completata.")
 
 
 if __name__ == "__main__":

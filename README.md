@@ -24,18 +24,18 @@ Once the script is running, follow the instructions on screen.
 - `dataset/`
    - `normalizer.py` contains a script to create a single dataset from two different ones and export it in .json format.
    - `utils.py` contains many useful functions to work with the datasets, such as shuffling and splitting and getting combined datasets.
-   - `deep/`
+   - `deep/` contains all the fixed datasets for multilayer perceptron experiments.
    - `sources/` contains the datasets that are being used for the experiments.
       - `automatedAccountData.json` contains the fake accounts of the `InstaFake` dataset.
       - `nonautomatedAccountData.json` contains the real accounts of the `InstaFake` dataset.
       - `user_fake_authentic_2class.csv` contains the `IJECE` dataset.
-- `deep/`
-   - `common.py`
-   - `experiment.py`
-   - `combined/`
-   - `compatible/`
-   - `IJECE/`
-   - `InstaFake/`
+- `deep/` contains all the multilayer perceptron related functions and models.
+   - `common.py` contains several utility functions for multilayer perceptron.
+   - `experiment.py` contains the main experiment runner for multilayer perceptron.
+   - `combined/` contains training scripts, model definitions and models for the "combined" datasets.
+   - `compatible/` contains training scripts, model definitions and models for the "compatible" datasets.
+   - `IJECE/` contains training scripts, model definitions and models for the "IJECE" datasets.
+   - `InstaFake/` contains training scripts, model definitions and models for the "InstaFake" datasets.
 - `visualization/`
    - `plotter.py` contains many useful functions to plot data and results.
    - `plots/` contains the plots for the data analysis on the original datasets.

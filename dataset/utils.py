@@ -6,7 +6,12 @@ PERCENT_TRAIN = 70
 
 
 def shuffle_and_split(ds_fake, ds_correct):
-    # print(f"Now splitting dataset with ratio {PERCENT_TRAIN}:{100 - PERCENT_TRAIN}")
+    """
+    Shuffles and splits equally fake and correct rows of information from a dataset
+    :param ds_fake: fake rows
+    :param ds_correct: correct rows
+    :return: two dataframes, train and validation
+    """
     random.shuffle(ds_fake)
     random.shuffle(ds_correct)
 
@@ -26,9 +31,9 @@ def shuffle_and_split(ds_fake, ds_correct):
 
 def find_demarcator(dataset):
     """
-    Restituisce l'indice del primo elemento non fake
-    :param dataset: il dataset
-    :return: l'indice
+    Returns the first non-fake element's index
+    :param dataset: the dataset
+    :return: the index
     """
     idx = 0
     for elem in dataset:
@@ -40,6 +45,11 @@ def find_demarcator(dataset):
 
 
 def get_fake_correct_default(csv):
+    """
+    Load up the dataset, already split up in fake/correct
+    :param csv: if the file is in csv format (IJECE)
+    :return: the datasets
+    """
     if csv:
         default_dataset = csv_importer_full("dataset/sources/user_fake_authentic_2class.csv")
         idx = find_demarcator(default_dataset)
@@ -50,6 +60,10 @@ def get_fake_correct_default(csv):
 
 
 def get_combined_datasets():
+    """
+    Load up the two datasets and then combine them.
+    :return: the datasets, combined in partial and full mode
+    """
     fake_if = json_importer_full("./dataset/sources/automatedAccountData.json", True, False)
     correct_if = json_importer_full("./dataset/sources/nonautomatedAccountData.json", False, False)
     ijece = csv_importer_full("./dataset/sources/user_fake_authentic_2class.csv", False)
@@ -67,6 +81,13 @@ def get_combined_datasets():
 
 
 def get_compatible_dataset(train_df, validation_df, csv):
+    """
+    Drops the needed keys to make datasets compatible
+    :param train_df: train dataset
+    :param validation_df: validation dataset
+    :param csv: flag to tell if we're dealing with IJECE or IF
+    :return: the compatible datasets
+    """
     if csv:
         custom_train_df = train_df.drop(["pic", "cl", "cz", "ni", "lt", "pr", "fo", "cs"], axis=1)
         custom_validation_df = validation_df.drop(["pic", "cl", "cz", "ni", "lt", "pr", "fo", "cs"], axis=1)
@@ -85,16 +106,25 @@ def get_compatible_dataset(train_df, validation_df, csv):
 
 
 def get_ijece_custom_dataset(train_df, validation_df):
+    """
+    Get IJECE custom dataset
+    :param train_df: train dataset
+    :param validation_df: validation dataset
+    :return: the dataset
+    """
     custom_train_df = train_df.drop(["ni", "lt", "mediaHashtagNumbers"], axis=1)
     custom_validation_df = validation_df.drop(["ni", "lt", "mediaHashtagNumbers"], axis=1)
     return custom_train_df, custom_validation_df
 
 
-# TODO: attributi in comune sui singoli dataset e guarda quali funzionano meglio tra IF_Cus, IJECE_Cus,
-# IF_comp e IJECE_comp
-
-
 def get_custom_dataset(train_df, validation_df, csv):
+    """
+    Routing function
+    :param train_df: train dataset
+    :param validation_df: validation dataset
+    :param csv: flag to tell if we're dealing with IJECE or IF
+    :return: the dataset
+    """
     if csv:
         return get_ijece_custom_dataset(train_df, validation_df)
     else:
@@ -102,12 +132,25 @@ def get_custom_dataset(train_df, validation_df, csv):
 
 
 def get_ijece_default_dataset(train_df, validation_df):
+    """
+    Get the default IJECE dataset
+    :param train_df: train dataset
+    :param validation_df: validation dataset
+    :return: the dataset
+    """
     custom_train_df = train_df.drop(["followerToFollowing", "hasMedia"], axis=1)
     custom_validation_df = validation_df.drop(["followerToFollowing", "hasMedia"], axis=1)
     return custom_train_df, custom_validation_df
 
 
 def get_default_dataset(train_df, validation_df, csv):
+    """
+    Routing function
+    :param train_df: train dataset
+    :param validation_df: validation dataset
+    :param csv: flag to tell if we're dealing with IJECE or IF
+    :return: the dataset
+    """
     if csv:
         return get_ijece_default_dataset(train_df, validation_df)
     else:
@@ -116,11 +159,9 @@ def get_default_dataset(train_df, validation_df, csv):
 
 def get_instafake_default_dataset(train_df, validation_df):
     """
-    Da tenere: nmedia, follower, following, HasHighlightReels, Number of tags,
-    average hashtag numbers, Average media likes,
-    FFR, media or not
-    :param train_df:
-    :param validation_df:
+    Returns instafake default dataset
+    :param train_df: train dataset
+    :param validation_df: validation dataset
     :return:
     """
     default_train_df = train_df.drop(["biol",
@@ -139,18 +180,22 @@ def get_instafake_default_dataset(train_df, validation_df):
 
 
 def get_deep_learning_dataset():
+    """
+    This function creates the fixed datasets for the Multilayer Perceptron experiments.
+    :return:
+    """
     fake_csv, correct_csv = get_fake_correct_default(True)
     fake_json, correct_json = get_fake_correct_default(False)
 
     # IJECE dataset
     ijece_train, ijece_val = shuffle_and_split(fake_csv, correct_csv)
-    # ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
-    # ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
+    ijece_train.to_csv(f'./dataset/deep/IJECE_df_train.csv')
+    ijece_val.to_csv(f'./dataset/deep/IJECE_df_val.csv')
 
     # InstaFake dataset
     if_train, if_val = shuffle_and_split(fake_json, correct_json)
-    # if_train.to_json(f'./dataset/deep/instafake_df_train.json')
-    # if_val.to_json(f'./dataset/deep/instafake_df_val.json')
+    if_train.to_json(f'./dataset/deep/instafake_df_train.json')
+    if_val.to_json(f'./dataset/deep/instafake_df_val.json')
 
     # Instafake compatible dataset
     if_train_c = if_train
@@ -174,15 +219,15 @@ def get_deep_learning_dataset():
     partial_fake = fake_json + ijece_fake_part
     partial_correct = correct_json + ijece_correct_part
     partial_train, partial_validation = treat_combined(partial_fake, partial_correct)
-    # partial_train.to_json(f'./dataset/deep/combo_partial_df_train.json')
-    # partial_validation.to_json(f'./dataset/deep/combo_partial_df_val.json')
+    partial_train.to_json(f'./dataset/deep/combo_partial_df_train.json')
+    partial_validation.to_json(f'./dataset/deep/combo_partial_df_val.json')
 
     # Unbalanced joined dataset
     combined_fake = fake_json + fake_csv
     combined_correct = correct_json + correct_csv
     combined_train, combined_validation = treat_combined(combined_fake, combined_correct)
-    # combined_train.to_json(f'./dataset/deep/combo_full_df_train.json')
-    # combined_validation.to_json(f'./dataset/deep/combo_full_df_val.json')
+    combined_train.to_json(f'./dataset/deep/combo_full_df_train.json')
+    combined_validation.to_json(f'./dataset/deep/combo_full_df_val.json')
 
 
 def treat_combined(fake, correct, demarcator=700):

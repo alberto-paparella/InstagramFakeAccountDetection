@@ -1,3 +1,4 @@
+# This file is used only in development, an allows the training and comparison of neural network models.
 import datetime
 
 from compatible_ijece import run_model as run_ijece_comp_model

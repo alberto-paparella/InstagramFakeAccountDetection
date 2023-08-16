@@ -1,3 +1,4 @@
+# This file is used only in development, an allows the training and comparison of neural network models.
 import datetime
 
 from combined_partial import run_model as run_partial_model
