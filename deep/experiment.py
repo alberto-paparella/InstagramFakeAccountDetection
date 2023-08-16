@@ -12,22 +12,22 @@ def run_experiment(folder, names, mode, n_iter=10):
     :return: results of the experiments.
     """
     if mode == "ijece":
-        (default_train, default_validation), (custom_train, custom_validation) = get_dataset_IJECE()
+        (default_train, default_val), (custom_train, custom_val) = get_dataset_IJECE()
     elif mode == "if":
-        (default_train, default_validation), (custom_train, custom_validation) = get_dataset_instafake()
-    # From this point forward, we don't have "default" models to compare against. Hence, default_validation is set as None
+        (default_train, default_val), (custom_train, custom_val) = get_dataset_instafake()
+    # From this point forward, we don't have "default" models to compare against. Hence, default_val is set as None
     elif mode == "combo-par":
-        (custom_train, custom_validation) = get_dataset_combined(False)
-        default_validation = None
+        (custom_train, custom_val) = get_dataset_combined(False)
+        default_val = None
     elif mode == "combo-full":
-        (custom_train, custom_validation) = get_dataset_combined(True)
-        default_validation = None
+        (custom_train, custom_val) = get_dataset_combined(True)
+        default_val = None
     elif mode == "comp-if":
-        (custom_train, custom_validation) = get_compatible_dataset("if")
-        default_validation = None
+        (custom_train, custom_val) = get_compatible_dataset("if")
+        default_val = None
     elif mode == "comp-ijece":
-        (custom_train, custom_validation) = get_compatible_dataset("ijece")
-        default_validation = None
+        (custom_train, custom_val) = get_compatible_dataset("ijece")
+        default_val = None
     else:
         return
     default_model = None
@@ -36,8 +36,8 @@ def run_experiment(folder, names, mode, n_iter=10):
         default_model = load_model(folder, names[0])
     custom_model = load_model(folder, names[1])
     # Build up the testing items
-    items = [{"model": default_model, "validation": default_validation, "idx": 0},
-             {"model": custom_model, "validation": custom_validation, "idx": 1}]
+    items = [{"model": default_model, "val": default_val, "idx": 0},
+             {"model": custom_model, "val": custom_val, "idx": 1}]
     print(f"Running deep learning experiments for {n_iter} times...")
     results = [{"accuracy": 0, "loss": 0, "precision": 0, "recall": 0, "f1": 0},
                {"accuracy": 0, "loss": 0, "precision": 0, "recall": 0, "f1": 0}]
@@ -46,8 +46,8 @@ def run_experiment(folder, names, mode, n_iter=10):
             continue
         for i in range(n_iter):
             # Run experiments and compute metrics
-            loss, acc, precision, recall = item["model"].evaluate(x=item["validation"].iloc[:, :-1],
-                                                                  y=item["validation"].iloc[:, -1], verbose=0)
+            loss, acc, precision, recall = item["model"].evaluate(x=item["val"].iloc[:, :-1],
+                                                                  y=item["val"].iloc[:, -1], verbose=0)
             results[item["idx"]]["accuracy"] += acc
             results[item["idx"]]["loss"] += loss
             results[item["idx"]]["precision"] += precision

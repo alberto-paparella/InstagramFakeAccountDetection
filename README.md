@@ -19,7 +19,7 @@ Once the script is running, follow the instructions on screen.
 ## Codebase structure
 
 - `main.py` serves as executable script to run the experiments.
-- `generate_dl_dataset.py` serves as executable script to instantiate or reset deep learning models.
+- `generate_dl_dataset.py` serves as executable script to instantiate or reset deep learning models datasets.
 - `utils/utils.py` contains many useful functions such as the ones to run the experiments or get the metric scores.
 - `dataset/`
    - `normalizer.py` contains a script to create a single dataset from two different ones and export it in .json format.
