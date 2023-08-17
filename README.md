@@ -5,7 +5,8 @@ Degree course in Computer Science.
 
 ## Installing and running the project
 
-This section contains instructions to configure and run the project.
+This section contains instructions to configure and run the project. According to the installation, you may need to refer
+to python as python3. Python 3 is mandatory for the execution of this project, as is the presence of the venv module.
 
 1. Either download or clone the project from GitLab.
 2. Open up a terminal inside the project directory.
