@@ -1,7 +1,19 @@
-# AI_PythonInMyBoot
+# Instagram Fake Account Detection
 
-This project is a deliverable created for the "Intelligenza Artificiale" exam from the Alma Mater Studiorum's Master's
+This project is a deliverable created for the "Artificial Intelligence" exam from the Alma Mater Studiorum's Master's
 Degree course in Computer Science.
+
+## Introduction
+
+Instagram is one of the most used social networks today, specifically by many young people as well as companies and
+content creators. However, the large presence of fake accounts puts in danger the experience of all its users, spreading
+phenomena such as spam, fraud, and fake engagement.
+
+The aim of this project is therefore to give a deep analysis of the set of features useful for the discrimination of these
+accounts leveraging Machine Learning techniques, with a particular interest in explainability. This has been done starting
+from two existing proposals from the literature, giving a better set of attributes for both approaches both proposing
+new features composed by the already existing ones and removing old features considered unnecessary. Various Machine Learning
+techniques are then compared to give a better understanding of the solution, giving positive results.
 
 ## Installing and running the project
 
